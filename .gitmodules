@@ -1,6 +1,0 @@
-[submodule "PolyChordLite"]
-	path = PolyChordLite
-	url = https://github.com/PolyChord/PolyChordLite/
-[submodule "bridgestan"]
-	path = bridgestan
-	url = https://github.com/roualdes/bridgestan/
