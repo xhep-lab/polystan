@@ -16,7 +16,7 @@ jobs:
       with:
         submodules: recursive
     - name: make
-      run: make PS_MODEL=./examples/bernoulli.json
+      run: make PS_MPI=0 PS_MODEL=./examples/bernoulli.json
     - name: run
       run: ./build/bernoulli/run --data file=./examples/bernoulli.data.json
       
