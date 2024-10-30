@@ -1,0 +1,19 @@
+vector flat_prior(vector x, real a, real b) {
+  return (b - a) * x + a;
+}
+
+vector log_prior(vector x, real a, real b) {
+  return a * exp(log(b / a) * x);
+}
+
+vector normal_prior(vector x, real mu, real sigma) {
+  return inv_Phi(x) * sigma + mu;
+}
+
+vector log10_normal_prior(vector x, real mu, real sigma) {
+  return exp(log(10.) * normal_prior(x, mu, sigma));
+}
+
+vector log_normal_prior(vector x, real mu, real sigma) {
+  return exp(normal_prior(x, mu, sigma));
+}
