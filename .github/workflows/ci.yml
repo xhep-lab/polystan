@@ -20,5 +20,5 @@ jobs:
     - name: make
       run: make PS_MODEL=./examples/bernoulli.stan
     - name: run
-      run: ./build/bernoulli/run --data file=./examples/bernoulli.data.json
+      run: ./build/bernoulli/run data --file=./examples/bernoulli.data.json
       
