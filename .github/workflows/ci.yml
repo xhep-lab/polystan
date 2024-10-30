@@ -18,7 +18,7 @@ jobs:
     - name: dependencies
       run: sudo apt-get install gfortran libopenmpi-dev
     - name: make
-      run: make PS_MODEL=./examples/bernoulli.json
+      run: make PS_MODEL=./examples/bernoulli.stan
     - name: run
       run: ./build/bernoulli/run --data file=./examples/bernoulli.data.json
       
