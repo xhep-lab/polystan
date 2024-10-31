@@ -11,5 +11,6 @@ transformed parameters {
   vector[2] theta = flat_prior(x, -5, 5);
 }
 model {
-    target += norm - square(square(theta[1]) + theta[2] - 11) - square(theta[1] + square(theta[2]) - 7); 
+  target += norm - square(square(theta[1]) + theta[2] - 11)
+            - square(theta[1] + square(theta[2]) - 7);
 }

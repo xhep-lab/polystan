@@ -14,5 +14,5 @@ transformed parameters {
   vector[N] theta = flat_prior(x, -5.12, 5.12);
 }
 model {
-    target += - sum(norm + square(theta) - 10. * cos(2. * pi() * theta));
+  target += -sum(norm + square(theta) - 10. * cos(2. * pi() * theta));
 }
