@@ -9,15 +9,15 @@ namespace polystan {
 namespace mpi {
 
 void initialize() {
-  #ifdef USE_MPI
+#ifdef USE_MPI
   MPI_Init(NULL, NULL);
-  #endif
+#endif
 }
 
 void finalize() {
-  #ifdef USE_MPI
+#ifdef USE_MPI
   MPI_Finalize();
-  #endif
+#endif
 }
 
 #ifdef USE_MPI
@@ -39,21 +39,20 @@ int get_size() {
 }
 #endif
 
-
 void barrier() {
-  #ifdef USE_MPI
+#ifdef USE_MPI
   MPI_Barrier(get_comm());
-  #endif
+#endif
 }
 
 bool is_rank_zero() {
-  #ifdef USE_MPI
+#ifdef USE_MPI
   int rank;
   MPI_Comm_rank(get_comm(), &rank);
   return rank == 0;
-  #else
+#else
   return true;
-  #endif
+#endif
 }
 
 }  // end namespace mpi

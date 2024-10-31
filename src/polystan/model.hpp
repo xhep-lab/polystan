@@ -15,12 +15,9 @@
 #include "bridgestan/src/bridgestan.h"
 #include "polychord/interfaces.hpp"
 
-
 namespace polystan {
 
-double logit(double x) {
-  return std::log(x / (1 - x));
-}
+double logit(double x) { return std::log(x / (1 - x)); }
 
 bool unit_hypercube(bs_model* model) {
   const double tol = 1e-5;
@@ -38,12 +35,14 @@ bool unit_hypercube(bs_model* model) {
   }
 
   char* err;
-  const int err_code = bs_param_constrain(model, 0, 0, theta_unc, theta, nullptr, &err);
+  const int err_code
+      = bs_param_constrain(model, 0, 0, theta_unc, theta, nullptr, &err);
 
   if (err_code != 0) {
-    throw std::runtime_error("Error in bs_param_constrain: " + std::string(err));
+    throw std::runtime_error("Error in bs_param_constrain: "
+                             + std::string(err));
   }
-  
+
   for (int i = 0; i < ndim; i++) {
     const double diff = std::abs(logit(theta[i]) - theta_unc[i]);
 
@@ -61,7 +60,7 @@ bs_model* make_bs_model(std::string data_file_name, unsigned int seed) {
   bs_model* model = bs_model_construct(data_file_name.c_str(), seed, &err);
 
   if (!model && err) {
-    std::string err_msg = "Error in bs_model_construct: "+ std::string(err);
+    std::string err_msg = "Error in bs_model_construct: " + std::string(err);
     if (data_file_name.empty()) {
       err_msg += "\nDid your model require a data file to be specified?";
     }
@@ -69,7 +68,9 @@ bs_model* make_bs_model(std::string data_file_name, unsigned int seed) {
   }
 
   if (!unit_hypercube(model)) {
-    throw std::runtime_error("Parameters are not defined on unit hypercube; expect e.g. real<lower=0, upper=1>");
+    throw std::runtime_error(
+        "Parameters are not defined on unit hypercube; expect e.g. "
+        "real<lower=0, upper=1>");
   }
 
   return model;
@@ -90,7 +91,8 @@ bs_rng* make_bs_rng(bs_model* model, unsigned int seed) {
   return rng;
 }
 
-double loglike(bs_model* model, bs_rng* rng, double* theta, int ndim, double* phi, int nderived) {
+double loglike(bs_model* model, bs_rng* rng, double* theta, int ndim,
+               double* phi, int nderived) {
   int err_code = 0;
   char* err;
 
@@ -98,14 +100,17 @@ double loglike(bs_model* model, bs_rng* rng, double* theta, int ndim, double* ph
   err_code = bs_param_unconstrain(model, theta, theta_unc, &err);
 
   if (err_code != 0) {
-    throw std::runtime_error("Error in bs_param_unconstrain: " + std::string(err));
+    throw std::runtime_error("Error in bs_param_unconstrain: "
+                             + std::string(err));
   }
 
   double theta_phi[ndim + nderived];
-  err_code = bs_param_constrain(model, 1, rng != nullptr, theta_unc, theta_phi, rng, &err);
+  err_code = bs_param_constrain(model, 1, rng != nullptr, theta_unc, theta_phi,
+                                rng, &err);
 
   if (err_code != 0) {
-    throw std::runtime_error("Error in bs_param_constrain: " + std::string(err));
+    throw std::runtime_error("Error in bs_param_constrain: "
+                             + std::string(err));
   }
 
   for (int i = 0; i < nderived; i++) {
@@ -124,12 +129,12 @@ double loglike(bs_model* model, bs_rng* rng, double* theta, int ndim, double* ph
 
 class Model {
  public:
-  Model(std::string data_file_name, unsigned int seed, Settings settings) :
-      seed(seed),
-      data_file_name(data_file_name),
-      model(make_bs_model(data_file_name, seed)),
-      rng(make_bs_rng(model, seed)),
-      settings(settings) {
+  Model(std::string data_file_name, unsigned int seed, Settings settings)
+      : seed(seed),
+        data_file_name(data_file_name),
+        model(make_bs_model(data_file_name, seed)),
+        rng(make_bs_rng(model, seed)),
+        settings(settings) {
     fix_settings();
   }
 
@@ -139,15 +144,16 @@ class Model {
     static bs_model* model_(model);
     static bs_rng* rng_(rng);
 
-    const auto this_loglike = [] (double* theta, int ndim, double* phi, int nderived) {
-      return loglike(model_, rng_, theta, ndim, phi, nderived);
-    };
+    const auto this_loglike
+        = [](double* theta, int ndim, double* phi, int nderived) {
+            return loglike(model_, rng_, theta, ndim, phi, nderived);
+          };
 
-    #ifdef USE_MPI
+#ifdef USE_MPI
     run_polychord(this_loglike, settings, mpi::get_comm());
-    #else
+#else
     run_polychord(this_loglike, settings);
-    #endif
+#endif
   }
 
   void write(std::string json_file_name) const {
@@ -188,7 +194,7 @@ class Model {
     // samples
 
     json::Object samples_;
-  
+
     if (settings.equals) {
       auto names_ = names();
       names_.insert(names_.begin(), "log likelihood");
@@ -233,16 +239,15 @@ class Model {
     return std::vector<std::string>(names_.begin() + ndims(), names_.end());
   }
 
-  int ndims() const {
-    return bs_param_num(model, 0, 0);
-  }
+  int ndims() const { return bs_param_num(model, 0, 0); }
 
   int nderived() const {
     return bs_param_num(model, 1, 1) - bs_param_num(model, 0, 0);
   }
 
   std::string basename() const {
-    return std::filesystem::weakly_canonical(settings.base_dir) / settings.file_root;
+    return std::filesystem::weakly_canonical(settings.base_dir)
+           / settings.file_root;
   }
 
   std::vector<std::vector<double>> samples() const {
@@ -254,7 +259,6 @@ class Model {
   }
 
  private:
-
   void fix_settings() {
     settings.nDims = ndims();
     settings.nDerived = nderived();
