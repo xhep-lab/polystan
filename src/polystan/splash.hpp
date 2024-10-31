@@ -35,7 +35,7 @@ std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
 std::string start(const Model& model) {
   std::stringstream splash;
 
-  splash << COLOR << PREFIX << "PolyStan" << "\n"
+  splash << COLOR << PREFIX << "PolyStan\n"
          << PREFIX << "\n"
          << PREFIX << "Version: " << version << "\n"
          << PREFIX << "PolyChord version: " << polychord_version << "\n"
@@ -50,7 +50,7 @@ std::string start(const Model& model) {
          << PREFIX << "Using MPI with size: " << mpi::get_size() << "\n"
          << PREFIX << "\n"
 #endif
-         << PREFIX << "Running PolyChord" << "\n"
+         << PREFIX << "Running PolyChord\n"
          << RESET;
 
   return splash.str();
@@ -60,16 +60,15 @@ std::string end(std::string json_file_name, const Model& model) {
   std::stringstream splash;
 
   splash << COLOR << "\n"
-         << PREFIX << "Finished PolyChord" << "\n"
+         << PREFIX << "Finished PolyChord\n"
          << PREFIX << "Native PolyChord results at " << model.basename()
          << "*\n"
          << PREFIX << "PolyStan JSON summary at " << json_file_name << "\n"
          << PREFIX << "\n"
-         << PREFIX << "If you use these results, you are required to cite"
-         << "\n"
-         << PREFIX << "https://arxiv.org/abs/1502.01856" << "\n"
-         << PREFIX << "https://arxiv.org/abs/1506.00171" << "\n"
-         << PREFIX << "and agree to the license" << "\n"
+         << PREFIX << "If you use these results, you are required to cite\n"
+         << PREFIX << "https://arxiv.org/abs/1502.01856\n"
+         << PREFIX << "https://arxiv.org/abs/1506.00171\n"
+         << PREFIX << "and agree to the license\n"
          << PREFIX
          << "https://github.com/PolyChord/PolyChordLite/raw/refs/heads/master/"
             "LICENCE"
