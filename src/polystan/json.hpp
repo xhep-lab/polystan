@@ -20,7 +20,7 @@ Alloc& get_allocator() {
 }
 
 template <typename T>
-rj::Value Vector(std::vector<T> f, Alloc& alloc) {
+rj::Value Vector(const std::vector<T>& f, Alloc& alloc) {
   rj::Value value(rj::kArrayType);
   value.Reserve(f.size(), alloc);
   for (const T& e : f) {
@@ -40,7 +40,7 @@ class Object {
   Object() : value(rj::kObjectType), alloc(get_allocator()) {}
 
   template <typename T>
-  void add(std::string name, std::vector<T> data) {
+  void add(std::string name, const std::vector<T>& data) {
     value.AddMember(String(name, alloc).Move(), Vector(data, alloc).Move(),
                     alloc);
   }
