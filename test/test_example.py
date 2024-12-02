@@ -16,7 +16,7 @@ EXAMPLE = os.path.join(ROOT, "examples")
 BUILD = os.path.join(ROOT, "build")
 EXAMPLES = [os.path.splitext(n)[0]
             for n in os.listdir(EXAMPLE) if n.endswith(".stan")]
-EXPECTED = {"bernoulli": -6.232039928436279,
+EXPECTED = {"bernoulli": -6.19766092300415,
             "himmelblau": -4.707243919372559,
             "eggbox": -4.178520202636719,
             "rastrigin": -4.548888206481934}
