@@ -16,7 +16,7 @@ jobs:
       with:
         submodules: recursive
     - name: dependencies
-      run: sudo apt-get install gfortran libopenmpi-dev pytest
+      run: sudo apt-get install gfortran libopenmpi-dev python3-pytest
     - name: make
       run: make PS_MODEL=./examples/bernoulli.stan
     - name: run
