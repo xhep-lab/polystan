@@ -37,7 +37,7 @@ def cli_args(**kwargs):
 
 
 def run_cli(example):
-    args = {"random": {"seed": SEED}, "polychord": {"seed": SEED}}
+    args = {"random": {"seed": SEED}, "polychord": {"seed": SEED, "overwrite": 1}}
 
     data_file = f"{os.path.join(EXAMPLE, example)}.data.json"
     if os.path.isfile(data_file):
