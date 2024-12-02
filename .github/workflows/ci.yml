@@ -22,4 +22,4 @@ jobs:
     - name: run
       run: ./build/bernoulli/run data --file=./examples/bernoulli.data.json
     - name: test
-      run: pytest test/
+      run: pytest-3 test/
