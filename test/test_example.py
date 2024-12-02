@@ -6,7 +6,6 @@ Python wrapper around calls for tests
 import os
 import json
 import subprocess
-from contextlib import chdir
 
 import pytest
 
@@ -26,8 +25,7 @@ SEED = 127
 
 def make_polystan(example):
     stan_file = f"{os.path.join(EXAMPLE, example)}.stan"
-    with chdir(ROOT):
-        subprocess.check_call(f"make PS_MODEL={stan_file}", shell=True)
+    subprocess.check_call(f"make PS_MODEL={stan_file}", shell=True, cwd=ROOT)
 
 
 def cli_subargs(**kwargs):
@@ -45,8 +43,7 @@ def run_cli(example):
     if os.path.isfile(data_file):
         args["data"] = {"file": data_file}
 
-    with chdir(os.path.join(BUILD, example)):
-        return subprocess.check_call(f"./run {cli_args(**args)}", shell=True)
+    return subprocess.check_call(f"./run {cli_args(**args)}", shell=True, cwd=os.path.join(BUILD, example))
 
 
 def read_evidence(example):
