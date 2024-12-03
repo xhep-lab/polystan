@@ -12,14 +12,17 @@ import pytest
 
 CWD = os.path.dirname(os.path.realpath(__file__))
 ROOT = os.path.normpath(os.path.join(CWD, ".."))
+
 EXAMPLE = os.path.join(ROOT, "examples")
 BUILD = os.path.join(ROOT, "build")
+
 EXAMPLES = [os.path.splitext(n)[0]
             for n in os.listdir(EXAMPLE) if n.endswith(".stan")]
-EXPECTED = {"bernoulli": -6.19766092300415,
-            "himmelblau": -4.707243919372559,
-            "eggbox": -4.178520202636719,
-            "rastrigin": -4.548888206481934}
+
+EXPECTED_FILE_NAME = os.path.join(CWD, "expected.json")
+with open(EXPECTED_FILE_NAME, "r", encoding="utf-8") as expected_file:
+    EXPECTED = json.load(expected_file)
+
 SEED = 127
 
 
@@ -37,7 +40,8 @@ def cli_args(**kwargs):
 
 
 def run_cli(example):
-    args = {"random": {"seed": SEED}, "polychord": {"seed": SEED, "overwrite": 1}}
+    args = {"random": {"seed": SEED}, "polychord": {
+        "seed": SEED, "overwrite": 1}}
 
     data_file = f"{os.path.join(EXAMPLE, example)}.data.json"
     if os.path.isfile(data_file):
@@ -58,3 +62,16 @@ def test_evidence(example):
     make_polystan(example)
     run_cli(example)
     assert read_evidence(example) == EXPECTED[example]
+
+
+if __name__ == "__main__":
+
+    expected = {}
+
+    for example in EXAMPLES:
+        make_polystan(example)
+        run_cli(example)
+        expected[example] = read_evidence(example)
+
+    with open(EXPECTED_FILE_NAME, "w", encoding="utf-8") as expected_file:
+        json.dump(expected, expected_file)
