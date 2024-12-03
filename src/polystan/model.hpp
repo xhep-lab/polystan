@@ -132,7 +132,7 @@ class Model {
 
     for (int i = 0; i < ndims(); i++) {
       std::vector<double> gt(ndims(), 0.5);
-      gt[i] = 1. + std::numeric_limits<double>::round_error());
+      gt[i] = 1. + std::numeric_limits<double>::round_error();
       const auto gt_err = unconstrain_err(model, gt);
       if (!gt_err.has_value()) {
         throw std::runtime_error("> 1 was not out of bounds for parameter "
@@ -140,7 +140,7 @@ class Model {
       }
 
       std::vector<double> lt(ndims(), 0.5);
-      lt[i] = -std::numeric_limits<double>::round_error());
+      lt[i] = -std::numeric_limits<double>::round_error();
       const auto lt_err = unconstrain_err(model, lt);
       if (!lt_err.has_value()) {
         throw std::runtime_error("< 0 was not out of bounds for parameter "
