@@ -26,44 +26,6 @@ std::optional<std::string> unconstrain_err(bs_model* model,
   return err_code == 0 ? std::nullopt : std::optional<std::string>(err);
 }
 
-void check_unit_hypercube(bs_model* model) {
-  const int ndim = bs_param_num(model, 0, 0);
-
-  const std::vector<double> zeros(ndim, 0.);
-  const auto zeros_err = unconstrain_err(model, zeros);
-  if (zeros_err.has_value()) {
-    throw std::runtime_error(zeros_err.value() +
-        "\n\nZeros were out of bounds. Parameters are not defined on unit "
-        "hypercube; expect e.g. real<lower=0, upper=1>");
-  }
-
-  const std::vector<double> ones(ndim, 1.);
-  const auto ones_err = unconstrain_err(model, ones);
-  if (ones_err.has_value()) {
-    throw std::runtime_error(ones_err.value() +
-        "\n\nOnes were out of bounds. Parameters are not defined on unit "
-        "hypercube; expect e.g. real<lower=0, upper=1>");
-  }
-
-  const std::vector<double> gt(ndim,
-                               1. + std::numeric_limits<double>::round_error());
-  const auto gt_err = unconstrain_err(model, gt);
-  if (!gt_err.has_value()) {
-    throw std::runtime_error(
-        "> 1 was not out of bounds. Parameters are not defined on unit "
-        "hypercube; expect e.g. real<lower=0, upper=1>");
-  }
-
-  const std::vector<double> lt(ndim,
-                               -std::numeric_limits<double>::round_error());
-  const auto lt_err = unconstrain_err(model, lt);
-  if (!lt_err.has_value()) {
-    throw std::runtime_error(
-        "< 0 was not out of bounds. Parameters are not defined on unit "
-        "hypercube; expect e.g. real<lower=0, upper=1>");
-  }
-}
-
 bs_model* make_bs_model(std::string data_file_name, unsigned int seed) {
   char* err;
 
@@ -76,8 +38,6 @@ bs_model* make_bs_model(std::string data_file_name, unsigned int seed) {
     }
     throw std::runtime_error(err_msg);
   }
-
-  check_unit_hypercube(model);
 
   return model;
 }
@@ -147,7 +107,46 @@ class Model {
         model(make_bs_model(data_file_name, seed)),
         rng(make_bs_rng(model, seed)),
         settings(settings) {
+    check_unit_hypercube();
     fix_settings();
+  }
+
+  void check_unit_hypercube() const {
+    const std::string msg
+        = "Parameters are not defined on unit hypercube; "
+          "expect e.g. real<lower=0, upper=1>";
+
+    const std::vector<double> zeros(ndims(), 0.);
+    const auto zeros_err = unconstrain_err(model, zeros);
+    if (zeros_err.has_value()) {
+      throw std::runtime_error(zeros_err.value()
+                               + "\n\nZeros were out of bounds.\n\n" + msg);
+    }
+
+    const std::vector<double> ones(ndims(), 1.);
+    const auto ones_err = unconstrain_err(model, ones);
+    if (ones_err.has_value()) {
+      throw std::runtime_error(ones_err.value()
+                               + "\n\nOnes were out of bounds.\n\n" + msg);
+    }
+
+    for (int i = 0; i < ndims(); i++) {
+      std::vector<double> gt(ndims(), 0.5);
+      gt[i] = 1. + std::numeric_limits<double>::round_error());
+      const auto gt_err = unconstrain_err(model, gt);
+      if (!gt_err.has_value()) {
+        throw std::runtime_error("> 1 was not out of bounds for parameter "
+                                 + param_names()i] + "\n\n" + msg);
+      }
+
+      std::vector<double> lt(ndims(), 0.5);
+      lt[i] = -std::numeric_limits<double>::round_error());
+      const auto lt_err = unconstrain_err(model, lt);
+      if (!lt_err.has_value()) {
+        throw std::runtime_error("< 0 was not out of bounds for parameter "
+                                 + param_names()[i] + "\n\n" + msg);
+      }
+    }
   }
 
   void run() const {
