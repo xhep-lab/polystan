@@ -118,7 +118,8 @@ int main(int argc, char** argv) {
   try {
     optional_model.emplace(data_file_name, seed, settings);
   } catch (const std::exception& ex) {
-    return app.exit(CLI::ConstructionError(ex.what(), CLI::ExitCodes::InvalidError));
+    return app.exit(
+        CLI::ConstructionError(ex.what(), CLI::ExitCodes::InvalidError));
   }
 
   const ps::Model model = optional_model.value();

@@ -46,16 +46,17 @@ void check_unit_hypercube(bs_model* model) {
   }
 
   const std::vector<double> gt(ndim,
-                               1. + std::numeric_limits<double>::epsilon());
-  const auto gt_err = unconstrain_err(model, zeros);
+                               1. + std::numeric_limits<double>::round_error());
+  const auto gt_err = unconstrain_err(model, gt);
   if (!gt_err.has_value()) {
     throw std::runtime_error(
         "> 1 was not out of bounds. Parameters are not defined on unit "
         "hypercube; expect e.g. real<lower=0, upper=1>");
   }
 
-  const std::vector<double> lt(ndim, -std::numeric_limits<double>::min());
-  const auto lt_err = unconstrain_err(model, zeros);
+  const std::vector<double> lt(ndim,
+                               -std::numeric_limits<double>::round_error());
+  const auto lt_err = unconstrain_err(model, lt);
   if (!lt_err.has_value()) {
     throw std::runtime_error(
         "< 0 was not out of bounds. Parameters are not defined on unit "
@@ -147,11 +148,6 @@ class Model {
         rng(make_bs_rng(model, seed)),
         settings(settings) {
     fix_settings();
-  }
-
-  ~Model() {
-    bs_rng_destruct(rng);
-    bs_model_destruct(model);
   }
 
   void run() const {
