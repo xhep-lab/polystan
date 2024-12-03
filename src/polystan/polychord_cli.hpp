@@ -36,7 +36,7 @@ void AddPolyChord(CLI::App* app, Settings* settings) {
                 "Whether or not to use clustering at run time.");
 
   app->add_option("--feedback", settings->feedback,
-                  "How much command line feedback to give")
+                  "How much command line feedback to give.")
       ->check(CLI::Range(0, 3));
 
   app->add_option("--precision_criterion", settings->precision_criterion,
@@ -66,7 +66,7 @@ void AddPolyChord(CLI::App* app, Settings* settings) {
 
   app->add_flag("--write-samples,!--no-samples", settings->equals,
                 "Produce (equally weighted) posterior samples. Stored in "
-                "<root>_equal_weights.txt");
+                "<root>_equal_weights.txt.");
 
   app->add_flag("--cluster-posteriors,!--no-cluster-posteriors",
                 settings->cluster_posteriors,
@@ -93,10 +93,10 @@ void AddPolyChord(CLI::App* app, Settings* settings) {
 
   app->add_flag("--maximise,!--no-maximise", settings->maximise,
                 "Perform maximisation at the end of the run to find the "
-                "maximum likelihood poand value");
+                "maximum likelihood point and value.");
 
   app->add_option("--compression-factor", settings->compression_factor,
-                  "How often to update the files and do clustering")
+                  "How often to update the files and do clustering.")
       ->check(CLI::PositiveNumber);
 
   app->add_flag(
@@ -135,7 +135,7 @@ void AddPolyChord(CLI::App* app, Settings* settings) {
   app->add_option("--seed", settings->seed,
                   "Choose the seed to seed the random number generator. Note "
                   "**Positive seeds only** a negative seed indicates that you "
-                  "should use the system time in milliseconds");
+                  "should use the system time in milliseconds.");
 }
 
 }  // end namespace polystan
