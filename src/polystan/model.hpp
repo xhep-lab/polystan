@@ -138,6 +138,11 @@ class Model {
     fix_settings();
   }
 
+  ~Model() {
+    bs_rng_destruct(rng);
+    bs_model_destruct(model);
+  }
+
   void run() const {
     std::filesystem::create_directory(settings.base_dir);
 

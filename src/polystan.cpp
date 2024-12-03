@@ -1,5 +1,6 @@
-#include <iostream>
 #include <filesystem>
+#include <iostream>
+#include <optional>
 #include <string>
 
 #include "polystan/splash.hpp"
@@ -112,7 +113,15 @@ int main(int argc, char** argv) {
 
   ps::mpi::initialize();
 
-  const ps::Model model(data_file_name, seed, settings);
+  std::optional<ps::Model> optional_model;
+
+  try {
+    optional_model.emplace(data_file_name, seed, settings);
+  } catch (const std::exception& ex) {
+    return app.exit(CLI::ConstructionError(ex.what(), CLI::ExitCodes::InvalidError));
+  }
+
+  const ps::Model model = optional_model.value();
 
   if (ps::mpi::is_rank_zero()) {
     std::cout << ps::splash::start(model, toml_file_name) << std::endl;
