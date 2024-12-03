@@ -136,7 +136,7 @@ class Model {
       const auto gt_err = unconstrain_err(model, gt);
       if (!gt_err.has_value()) {
         throw std::runtime_error("> 1 was not out of bounds for parameter "
-                                 + param_names()i] + "\n\n" + msg);
+                                 + param_names()[i] + "\n\n" + msg);
       }
 
       std::vector<double> lt(ndims(), 0.5);
