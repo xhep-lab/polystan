@@ -17,18 +17,36 @@ template <typename T>
 class Display {
  public:
   Display(T data) : data(data) {}
-  void operator()(int) {
-    throw CLI::CallForVersion(data, CLI::ExitCodes::Success);
+  void operator()(int flag) {
+    if (flag > 0) {
+      throw CLI::CallForVersion(data, CLI::ExitCodes::Success);
+    }
   }
 
  private:
   T data;
 };
 
+auto weakly_canonical = CLI::Validator(
+    [](std::string& input) {
+      input = std::filesystem::weakly_canonical(input);
+      return std::string();
+    },
+    "Weakly canonicalize a path", "WeaklyCanonical");
+
 int main(int argc, char** argv) {
-  // parse cli
+  // make cli
 
   CLI::App app("PolyStan built with " + std::string(ps::stan_file_name));
+
+  // allow settings from a toml file
+
+  app.set_config("--from-toml", "", "Read CLI settings from a TOML file");
+  app.allow_config_extras(false);
+
+  // capture defaults
+
+  app.option_defaults()->always_capture_default();
 
   // construct settings before knowing nDims & nDerived. they aren't knowable
   // until constructing the model as could depend on data file
@@ -46,22 +64,32 @@ int main(int argc, char** argv) {
   settings.read_resume = true;
   settings.file_root = ps::stan_model_name;
 
+  // add options to cli
+
   CLI::App* pc = app.add_subcommand("polychord", "PolyChord settings");
   ps::AddPolyChord(pc, &settings);
 
   CLI::App* data = app.add_subcommand("data", "Data settings");
   std::string data_file_name;
   data->add_option("--file", data_file_name, "Data file name")
-      ->check(CLI::ExistingFile);
+      ->check(CLI::ExistingFile)
+      ->transform(weakly_canonical);
 
   CLI::App* random
       = app.add_subcommand("random", "Control Stan random number generation");
   unsigned int seed = 0;
-  random->add_option("--seed", seed, "Random seed")->check(CLI::PositiveNumber);
+  random->add_option("--seed", seed, "Random seed")
+      ->check(CLI::NonNegativeNumber);
 
   CLI::App* output = app.add_subcommand("output", "Control Stan output");
   std::string json_file_name = std::string(ps::stan_model_name) + ".json";
-  output->add_option("--file", json_file_name, "JSON file output name");
+  output->add_option("--json-file", json_file_name, "JSON file output name")
+      ->transform(weakly_canonical);
+  std::string toml_file_name = std::string(ps::stan_model_name) + ".toml";
+  output->add_option("--toml-file", toml_file_name, "TOML file output name")
+      ->transform(weakly_canonical);
+
+  // add version flags
 
   app.set_version_flag("--version", ps::version);
   app.add_flag("--polychord-version", Display(ps::polychord_version),
@@ -69,10 +97,16 @@ int main(int argc, char** argv) {
   app.add_flag("--stan-file-name", Display(ps::stan_file_name),
                "Display Stan file name and exit");
 
+  // parse options
+
   CLI11_PARSE(app, argc, argv);
 
-  data_file_name = std::filesystem::weakly_canonical(data_file_name);
-  json_file_name = std::filesystem::weakly_canonical(json_file_name);
+  // dump cli to toml file
+
+  std::ofstream toml_file;
+  toml_file.open(toml_file_name);
+  toml_file << app.config_to_str(true, true);
+  toml_file.close();
 
   // invoke main program
 
@@ -81,7 +115,7 @@ int main(int argc, char** argv) {
   const ps::Model model(data_file_name, seed, settings);
 
   if (ps::mpi::is_rank_zero()) {
-    std::cout << ps::splash::start(model) << std::endl;
+    std::cout << ps::splash::start(model, toml_file_name) << std::endl;
   }
 
   ps::mpi::barrier();

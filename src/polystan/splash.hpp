@@ -32,11 +32,12 @@ std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
   return out;
 }
 
-std::string start(const Model& model) {
+std::string start(const Model& model, std::string toml_file_name) {
   std::stringstream splash;
 
   splash << COLOR << PREFIX << "PolyStan\n"
          << PREFIX << "\n"
+         << PREFIX << "TOML file of arguments: " << toml_file_name << "\n"
          << PREFIX << "Version: " << version << "\n"
          << PREFIX << "PolyChord version: " << polychord_version << "\n"
          << PREFIX << "Stan file: " << model.stan_file_name << "\n"
