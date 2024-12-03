@@ -2,7 +2,7 @@
 #define POLYSTAN_MODEL_HPP_
 
 #include <filesystem>
-#include <random>
+#include <limits>
 #include <regex>
 #include <string>
 #include <vector>
@@ -17,41 +17,50 @@
 
 namespace polystan {
 
-double logit(double x) { return std::log(x / (1 - x)); }
-
-bool unit_hypercube(bs_model* model) {
-  const double tol = 1e-5;
-
-  const int ndim = bs_param_num(model, 0, 0);
-  double theta_unc[ndim];
-  double theta[ndim];
-
-  std::random_device r;
-  std::default_random_engine e(r());
-  std::uniform_real_distribution<double> u(0, 1);
-
-  for (int i = 0; i < ndim; i++) {
-    theta[i] = u(e);
-  }
-
+std::optional<std::string> unconstrain_err(bs_model* model,
+                                           std::vector<double> theta) {
+  double theta_unc[theta.size()];
   char* err;
   const int err_code
-      = bs_param_constrain(model, 0, 0, theta_unc, theta, nullptr, &err);
+      = bs_param_unconstrain(model, theta.data(), theta_unc, &err);
+  return err_code == 0 ? std::nullopt : std::optional<std::string>(err);
+}
 
-  if (err_code != 0) {
-    throw std::runtime_error("Error in bs_param_constrain: "
-                             + std::string(err));
+void check_unit_hypercube(bs_model* model) {
+  const int ndim = bs_param_num(model, 0, 0);
+
+  const std::vector<double> zeros(ndim, 0.);
+  const auto zeros_err = unconstrain_err(model, zeros);
+  if (zeros_err.has_value()) {
+    throw std::runtime_error(zeros_err.value() +
+        "\n\nZeros were out of bounds. Parameters are not defined on unit "
+        "hypercube; expect e.g. real<lower=0, upper=1>");
   }
 
-  for (int i = 0; i < ndim; i++) {
-    const double diff = std::abs(logit(theta[i]) - theta_unc[i]);
-
-    if (diff > tol) {
-      return false;
-    }
+  const std::vector<double> ones(ndim, 1.);
+  const auto ones_err = unconstrain_err(model, ones);
+  if (ones_err.has_value()) {
+    throw std::runtime_error(ones_err.value() +
+        "\n\nOnes were out of bounds. Parameters are not defined on unit "
+        "hypercube; expect e.g. real<lower=0, upper=1>");
   }
 
-  return true;
+  const std::vector<double> gt(ndim,
+                               1. + std::numeric_limits<double>::epsilon());
+  const auto gt_err = unconstrain_err(model, zeros);
+  if (!gt_err.has_value()) {
+    throw std::runtime_error(
+        "> 1 was not out of bounds. Parameters are not defined on unit "
+        "hypercube; expect e.g. real<lower=0, upper=1>");
+  }
+
+  const std::vector<double> lt(ndim, -std::numeric_limits<double>::min());
+  const auto lt_err = unconstrain_err(model, zeros);
+  if (!lt_err.has_value()) {
+    throw std::runtime_error(
+        "< 0 was not out of bounds. Parameters are not defined on unit "
+        "hypercube; expect e.g. real<lower=0, upper=1>");
+  }
 }
 
 bs_model* make_bs_model(std::string data_file_name, unsigned int seed) {
@@ -67,11 +76,7 @@ bs_model* make_bs_model(std::string data_file_name, unsigned int seed) {
     throw std::runtime_error(err_msg);
   }
 
-  if (!unit_hypercube(model)) {
-    throw std::runtime_error(
-        "Parameters are not defined on unit hypercube; expect e.g. "
-        "real<lower=0, upper=1>");
-  }
+  check_unit_hypercube(model);
 
   return model;
 }
@@ -96,6 +101,8 @@ double loglike(bs_model* model, bs_rng* rng, double* theta, int ndim,
   int err_code = 0;
   char* err;
 
+  // compute unconstrained parameters
+
   double theta_unc[ndim];
   err_code = bs_param_unconstrain(model, theta, theta_unc, &err);
 
@@ -103,6 +110,8 @@ double loglike(bs_model* model, bs_rng* rng, double* theta, int ndim,
     throw std::runtime_error("Error in bs_param_unconstrain: "
                              + std::string(err));
   }
+
+  // constrain parameters to compute derived
 
   double theta_phi[ndim + nderived];
   err_code = bs_param_constrain(model, 1, rng != nullptr, theta_unc, theta_phi,
@@ -116,6 +125,8 @@ double loglike(bs_model* model, bs_rng* rng, double* theta, int ndim,
   for (int i = 0; i < nderived; i++) {
     phi[i] = theta_phi[i + ndim];
   }
+
+  // compute density - stan works on unconstrained space
 
   double loglike;
   err_code = bs_log_density(model, 0, 0, theta_unc, &loglike, &err);
