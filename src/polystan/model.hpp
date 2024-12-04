@@ -9,6 +9,7 @@
 
 #include "polystan/read.hpp"
 #include "polystan/json.hpp"
+#include "polystan/read_err.hpp"
 #include "polystan/version.hpp"
 #include "polystan/mpi.hpp"
 
@@ -23,7 +24,8 @@ std::optional<std::string> unconstrain_err(bs_model* model,
   char* err;
   const int err_code
       = bs_param_unconstrain(model, theta.data(), theta_unc, &err);
-  return err_code == 0 ? std::nullopt : std::optional<std::string>(err);
+  return err_code == 0 ? std::nullopt
+                       : std::optional<std::string>(add_to_err(err));
 }
 
 bs_model* make_bs_model(std::string data_file_name, unsigned int seed) {
@@ -32,9 +34,9 @@ bs_model* make_bs_model(std::string data_file_name, unsigned int seed) {
   bs_model* model = bs_model_construct(data_file_name.c_str(), seed, &err);
 
   if (!model && err) {
-    std::string err_msg = "Error in bs_model_construct: " + std::string(err);
+    std::string err_msg = add_to_err(err);
     if (data_file_name.empty()) {
-      err_msg += "\nDid your model require a data file to be specified?";
+      err_msg += "\nDid your model require a data file to be specified e.g. by data --file=your-data-file.json?\n";
     }
     throw std::runtime_error(err_msg);
   }
@@ -51,7 +53,7 @@ bs_rng* make_bs_rng(bs_model* model, unsigned int seed) {
   bs_rng* rng = bs_rng_construct(seed, &err);
 
   if (!rng && err) {
-    throw std::runtime_error("Error in bs_rng_construct: " + std::string(err));
+    throw std::runtime_error(add_to_err(err));
   }
 
   return rng;
@@ -68,8 +70,7 @@ double loglike(bs_model* model, bs_rng* rng, double* theta, int ndim,
   err_code = bs_param_unconstrain(model, theta, theta_unc, &err);
 
   if (err_code != 0) {
-    throw std::runtime_error("Error in bs_param_unconstrain: "
-                             + std::string(err));
+    throw std::runtime_error(add_to_err(err));
   }
 
   // constrain parameters to compute derived
@@ -79,8 +80,7 @@ double loglike(bs_model* model, bs_rng* rng, double* theta, int ndim,
                                 rng, &err);
 
   if (err_code != 0) {
-    throw std::runtime_error("Error in bs_param_constrain: "
-                             + std::string(err));
+    throw std::runtime_error(add_to_err(err));
   }
 
   for (int i = 0; i < nderived; i++) {
@@ -93,7 +93,7 @@ double loglike(bs_model* model, bs_rng* rng, double* theta, int ndim,
   err_code = bs_log_density(model, 0, 0, theta_unc, &loglike, &err);
 
   if (err_code != 0) {
-    throw std::runtime_error("Error in bs_log_density: " + std::string(err));
+    throw std::runtime_error(add_to_err(err));
   }
 
   return loglike;
@@ -113,30 +113,29 @@ class Model {
 
   void check_unit_hypercube() const {
     const std::string msg
-        = "Parameters are not defined on unit hypercube; "
-          "expect e.g. real<lower=0, upper=1>";
+        = "\nParameters are not defined on unit hypercube; "
+          "expect e.g. real<lower=0, upper=1>\n";
 
     const std::vector<double> zeros(ndims(), 0.);
     const auto zeros_err = unconstrain_err(model, zeros);
     if (zeros_err.has_value()) {
-      throw std::runtime_error(zeros_err.value()
-                               + "\n\nZeros were out of bounds.\n\n" + msg);
-    }
-
-    const std::vector<double> ones(ndims(), 1.);
-    const auto ones_err = unconstrain_err(model, ones);
-    if (ones_err.has_value()) {
-      throw std::runtime_error(ones_err.value()
-                               + "\n\nOnes were out of bounds.\n\n" + msg);
+      throw std::runtime_error(zeros_err.value() + msg);
     }
 
     for (int i = 0; i < ndims(); i++) {
+      std::vector<double> one(ndims(), 0.);
+      one[i] = 1.;
+      const auto one_err = unconstrain_err(model, one);
+      if (one_err.has_value()) {
+        throw std::runtime_error(one_err.value() + msg);
+      }
+
       std::vector<double> gt(ndims(), 0.5);
       gt[i] = 1. + std::numeric_limits<double>::round_error();
       const auto gt_err = unconstrain_err(model, gt);
       if (!gt_err.has_value()) {
         throw std::runtime_error("> 1 was not out of bounds for parameter "
-                                 + param_names()[i] + "\n\n" + msg);
+                                 + param_names()[i] + msg);
       }
 
       std::vector<double> lt(ndims(), 0.5);
@@ -144,7 +143,7 @@ class Model {
       const auto lt_err = unconstrain_err(model, lt);
       if (!lt_err.has_value()) {
         throw std::runtime_error("< 0 was not out of bounds for parameter "
-                                 + param_names()[i] + "\n\n" + msg);
+                                 + param_names()[i] + msg);
       }
     }
   }

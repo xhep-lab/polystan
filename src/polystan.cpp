@@ -33,7 +33,7 @@ auto weakly_canonical = CLI::Validator(
       input = std::filesystem::weakly_canonical(input);
       return std::string();
     },
-    "Weakly canonicalize a path", "WeaklyCanonical");
+    "Weakly canonicalized", "WeaklyCanonical");
 
 int main(int argc, char** argv) {
   // make cli
