@@ -1,0 +1,48 @@
+Run the Bernoulli example,
+
+```bash
+make PS_MODEL=./examples/bernoulli.stan  # builds everything required for this model
+./build/bernoulli/run data --file examples/bernoulli.data.json  # runs model
+```
+
+This produces data from polystan
+```
+bernoulli.json
+bernoulli.toml
+```
+and inside the chains folder data from polychord
+```
+bernoulli.prior_info
+bernoulli.resume
+bernoulli.stats
+bernoulli_dead-birth.txt
+bernoulli_dead.txt
+bernoulli_equal_weights.txt
+bernoulli_phys_live-birth.txt
+bernoulli_phys_live.txt
+bernoulli_prior.txt
+```
+
+Now we can examine the results. E.g.,
+```
+cat chains/bernoulli.stats 
+```
+shows us the evidence estimate and error.
+
+For plotting, we can read the samples in the json file. Plot e.g., with arviz,
+```python
+import json
+
+with open("bernoulli.json", "r") as f:
+    data = json.load(f)
+
+import arviz as az
+import matplotlib.pyplot as plt
+
+id = az.convert_to_inference_data(data["samples"]["data"])
+
+az.plot_density(id)
+plt.show()
+```
+
+
