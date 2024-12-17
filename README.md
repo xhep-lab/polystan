@@ -7,10 +7,10 @@
 You need a few basic dependencies
 ```bash
 sudo apt-get install make gcc g++ libopenmpi-dev git  # on Ubuntu/debian
-sudo dnf install make gcc g++ openmpi openmpi-devel git  # Fedora
+sudo dnf install make gcc g++ openmpi openmpi-devel git && module load mpi/openmpi  # Fedora
 ```
 
-You need to clone recusively to obtain PolyChord and Stan code
+You need to clone recursively to obtain PolyChord and Stan code
 ```bash
 git clone --recursive https://github.com/andrewfowlie/polystan  # fresh clone
 git submodule update --init --recursive  # update an existing clone
@@ -25,8 +25,6 @@ For further runtime options, see
 ./build/bernoulli/run --help  # options
 ./build/bernoulli/run polychord --help  # polychord options
 ```
-
-
 
 # Supported Stan models
 
