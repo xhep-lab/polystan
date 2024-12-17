@@ -7,7 +7,7 @@
 You need a few basic dependencies
 ```bash
 sudo apt-get install make gcc g++ libopenmpi-dev git  # on Ubuntu/debian
-sudo dnf install make gcc g++ openmpi openmpi-devel git && module load mpi/openmpi  # Fedora
+sudo dnf install make gcc g++ openmpi openmpi-devel git && module load mpi/openmpi-$(uname -m)  # Fedora
 ```
 
 You need to clone recursively to obtain PolyChord and Stan code
