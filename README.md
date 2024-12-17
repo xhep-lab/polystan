@@ -1,8 +1,15 @@
-# `PolyStan`
+<h1 align="center">
+ 🌀 PolyStan
+</h1>
 
-`PolyStan` allows you to use the [`PolyChord`](https://github.com/PolyChord) nested sampling algorithm on [`Stan`](https://mc-stan.org/docs/reference-manual/blocks.html) models. This algorithm provides posterior samples and an estimate of the Bayesian evidence (a.k.a. normalizing constant and marginal likelihood) for use in Bayesian model comparison. For background reading, see e.g., [[1](https://arxiv.org/abs/2205.15570), [2](https://arxiv.org/abs/1502.01856)].
+<div align="center">
+<i>PolyChord nested sampling on Stan models. </i>
+</div>
+<br>
 
-# Quickstart
+PolyStan allows you to use the [PolyChord](https://github.com/PolyChord) nested sampling algorithm on [Stan](https://mc-stan.org/docs/reference-manual/blocks.html) models. This algorithm provides posterior samples and an estimate of the Bayesian evidence (a.k.a. normalizing constant and marginal likelihood) for use in Bayesian model comparison. For background reading, see e.g., [[1](https://arxiv.org/abs/2205.15570), [2](https://arxiv.org/abs/1502.01856)].
+
+## Install
 
 You need a few basic dependencies
 ```bash
@@ -20,13 +27,22 @@ Lastly, build and run a model, e.g.,
 make PS_MODEL=./examples/bernoulli.stan  # builds everything required for this model
 ./build/bernoulli/run data --file examples/bernoulli.data.json  # runs model
 ```
+## Run
+
+After building a model, try
+```bash
+./build/bernoulli/run data --file examples/bernoulli.data.json  # runs model
+```
 For further runtime options, see
 ```bash
 ./build/bernoulli/run --help  # options
 ./build/bernoulli/run polychord --help  # polychord options
 ```
 
-# Supported Stan models
+For a complete workflow, including plotting, see [EXAMPLE.md](EXAMPLE.md).
+
+
+## Supported Stan models
 
 The underlying model parameters block should be defined on a unit hypercube with constraints, e.g., a 3-dimensional model
 ```stan
