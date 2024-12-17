@@ -30,7 +30,7 @@ override CXXFLAGS += -I$(PS_POLYCHORD)/src/ -I$(BS_ROOT)/..
 override STANCFLAGS += $(PS_STAN_FLAGS)
 
 ifdef PS_MPI
-override LDLIBS +=-lmpi_cxx -lmpi
+override LDLIBS += -lmpi
 override CXXFLAGS += -DUSE_MPI
 override CXX = mpic++
 endif
