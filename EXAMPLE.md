@@ -23,6 +23,11 @@ bernoulli_phys_live.txt
 bernoulli_prior.txt
 ```
 
+For future reference, you can re-run with identical settings by
+```
+./build/bernoulli/run --from-toml bernoulli.toml
+```
+
 Now we can examine the results. E.g.,
 ```
 cat chains/bernoulli.stats 
@@ -44,5 +49,3 @@ id = az.convert_to_inference_data(data["samples"]["data"])
 az.plot_density(id)
 plt.show()
 ```
-
-
