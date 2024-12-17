@@ -1,4 +1,13 @@
-Run the Bernoulli example,
+<h1 align="center">
+Bernoulli
+</h1>
+
+<div align="center">
+<i>Build, run and analyse results from Bernoulli model. </i>
+</div>
+<br>
+
+## Build & run
 
 ```bash
 make PS_MODEL=./examples/bernoulli.stan  # builds everything required for this model
@@ -27,6 +36,8 @@ For future reference, you can re-run with identical settings by
 ```
 ./build/bernoulli/run --from-toml bernoulli.toml
 ```
+
+## Analyse
 
 Now we can examine the results. E.g.,
 ```
