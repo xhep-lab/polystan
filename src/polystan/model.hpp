@@ -11,6 +11,7 @@
 #include "polystan/json.hpp"
 #include "polystan/read_err.hpp"
 #include "polystan/version.hpp"
+#include "polystan/metadata.hpp"
 #include "polystan/mpi.hpp"
 
 #include "bridgestan/src/bridgestan.h"

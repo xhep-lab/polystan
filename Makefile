@@ -35,7 +35,6 @@ include $(BS_ROOT)/Makefile
 
 PS_MPI ?= 1
 PS_STAN_FLAGS := --include-paths $(PS_STAN_FUNCTIONS) --warn-pedantic --warn-uninitialized --O1
-PS_MACRO := -D PS_STAN_FILE_NAME=$(PS_STAN_FILE_NAME) -D PS_STAN_MODEL_NAME=$(PS_STAN_MODEL_NAME) -D PS_POLYCHORD_VERSION=$(PS_POLYCHORD_VERSION)
 
 override CXXFLAGS += -I$(PS_POLYCHORD)/src/ -I$(BS_ROOT)/..
 override STANCFLAGS += $(PS_STAN_FLAGS)
@@ -65,8 +64,11 @@ $(PS_BUILD)/$(PS_STAN_MODEL_NAME).hpp: $(STANC)
 $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o: $(PS_BUILD)/$(PS_STAN_MODEL_NAME).hpp
 	$(COMPILE.cpp) -w -x c++ -o $@ $<
 
-$(PS_BUILD)/polystan.o: $(PS_SRC)/polystan.cpp $(PS_HEADERS)
-	$(COMPILE.cpp) $(PS_MACRO) -I$(PS_SRC) $< -o $@
+$(PS_SRC)/polystan.o: $(PS_SRC)/polystan.cpp $(PS_POLYCHORD)/lib/libchord.so
+	$(COMPILE.cpp) -D PS_POLYCHORD_VERSION=$(PS_POLYCHORD_VERSION) -I$(PS_SRC) $< -o $@
 
-$(PS_EXE): $(PS_BUILD)/polystan.o $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o $(PS_POLYCHORD)/lib/libchord.so $(BRIDGE_O)
-	$(LINK.cpp) -o $@ $< $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o $(BRIDGE_O) $(PS_POLYCHORD_LDLIBS) $(LDLIBS)
+$(PS_BUILD)/metadata.o: $(PS_SRC)/metadata.cpp
+	$(COMPILE.cpp) -D PS_STAN_FILE_NAME=$(PS_STAN_FILE_NAME) -D PS_STAN_MODEL_NAME=$(PS_STAN_MODEL_NAME) -I$(PS_SRC) $< -o $@
+
+$(PS_EXE): $(PS_SRC)/polystan.o $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o $(PS_BUILD)/metadata.o $(PS_POLYCHORD)/lib/libchord.so $(BRIDGE_O)
+	$(LINK.cpp) -o $@ $< $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o $(PS_BUILD)/metadata.o $(BRIDGE_O) $(PS_POLYCHORD_LDLIBS) $(LDLIBS)

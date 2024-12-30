@@ -7,6 +7,7 @@
 #include "polystan/model.hpp"
 #include "polystan/polychord_cli.hpp"
 #include "polystan/version.hpp"
+#include "polystan/metadata.hpp"
 #include "polystan/mpi.hpp"
 
 #include "CLI11/CLI11.hpp"
