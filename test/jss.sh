@@ -1,6 +1,6 @@
 # build everything required for this model
 
-make PS_MODEL=./examples/bernoulli.stan  
+make ./examples/bernoulli.stan  
 
 # run model with fixed seeds
 
