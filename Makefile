@@ -65,11 +65,8 @@ $(PS_BUILD)/$(PS_STAN_MODEL_NAME).hpp: $(STANC)
 $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o: $(PS_BUILD)/$(PS_STAN_MODEL_NAME).hpp
 	$(COMPILE.cpp) -w -x c++ -o $@ $<
 
-$(PS_BUILD)/$(PS_STAN_MODEL_NAME).so: $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o $(BRIDGE_O) $(SUNDIALS_TARGETS) $(MPI_TARGETS) $(TBB_TARGETS)
-	$(LINK.cpp) -shared -lm -o $@ $< $(BRIDGE_O) $(LDLIBS) $(SUNDIALS_TARGETS) $(MPI_TARGETS) $(TBB_TARGETS)
-
 $(PS_BUILD)/polystan.o: $(PS_SRC)/polystan.cpp $(PS_HEADERS)
 	$(COMPILE.cpp) $(PS_MACRO) -I$(PS_SRC) $< -o $@
 
-$(PS_EXE): $(PS_BUILD)/polystan.o $(PS_BUILD)/$(PS_STAN_MODEL_NAME).so $(PS_POLYCHORD)/lib/libchord.so
-	$(LINK.cpp) -o $@ $< -Wl,-rpath ./ $(PS_BUILD)/$(PS_STAN_MODEL_NAME).so $(PS_POLYCHORD_LDLIBS) $(LDLIBS)
+$(PS_EXE): $(PS_BUILD)/polystan.o $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o $(PS_POLYCHORD)/lib/libchord.so $(BRIDGE_O)
+	$(LINK.cpp) -o $@ $< $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o $(BRIDGE_O) $(PS_POLYCHORD_LDLIBS) $(LDLIBS)
