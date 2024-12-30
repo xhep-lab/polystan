@@ -4,7 +4,7 @@ make ./examples/bernoulli.stan
 
 # run model with fixed seeds
 
-./build/bernoulli/run data --file examples/bernoulli.data.json random --seed=11 polychord --seed=12 --overwrite
+./examples/bernoulli data --file examples/bernoulli.data.json random --seed=11 polychord --seed=12 --overwrite
 
 # check evidence estimate etc
 

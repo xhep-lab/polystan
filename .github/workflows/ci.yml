@@ -20,6 +20,6 @@ jobs:
     - name: make
       run: make ./examples/bernoulli.stan
     - name: run
-      run: ./build/bernoulli/run data --file=./examples/bernoulli.data.json
+      run: ./examples/bernoulli data --file=./examples/bernoulli.data.json
     - name: test
       run: pytest-3 test/
