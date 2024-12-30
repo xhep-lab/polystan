@@ -1,7 +1,13 @@
 # Check the Stan model file name
 
-ifndef PS_MODEL
-$(error PS_MODEL is not set; try make PS_MODEL=your-model.stan)
+ifndef MAKECMDGOALS
+$(error No Stan file set; try make examples/bernoulli.stan)
+endif
+
+PS_MODEL = $(MAKECMDGOALS)
+
+ifeq ("$(wildcard $(PS_MODEL))", "")
+$(error Stan model $(PS_MODEL) does not exist)
 endif
 
 # Set paths etc
@@ -35,10 +41,7 @@ override CXXFLAGS += -DUSE_MPI
 override CXX = mpic++
 endif
 
-.DEFAULT_GOAL := $(PS_BUILD_MODEL)/run
-
-$(PS_MODEL):
-	$(error $(PS_MODEL) does not exist)
+$(PS_MODEL): $(PS_BUILD_MODEL)/run
 
 $(PS_POLYCHORD)/lib/libchord.so:
 	make -C $(PS_POLYCHORD)
@@ -46,8 +49,8 @@ $(PS_POLYCHORD)/lib/libchord.so:
 $(PS_BUILD_MODEL):
 	mkdir -p $(PS_BUILD_MODEL)
 
-$(PS_BUILD_MODEL)/$(PS_BASE).hpp: $(PS_MODEL) $(STANC) $(PS_BUILD_MODEL)
-	$(STANC) $(STANCFLAGS) --o=$@ $<
+$(PS_BUILD_MODEL)/$(PS_BASE).hpp: $(STANC) $(PS_BUILD_MODEL)
+	$(STANC) $(STANCFLAGS) --o=$@ $(PS_MODEL)
 
 $(PS_BUILD_MODEL)/$(PS_BASE).o: $(PS_BUILD_MODEL)/$(PS_BASE).hpp
 	$(COMPILE.cpp) -w -x c++ -o $@ $<
