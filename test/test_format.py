@@ -24,7 +24,7 @@ FAIL = [f for f in ALL if f not in PASS]
 def build_and_run(example):
     stan_file = f"{os.path.join(FORMAT, example)}.stan"
     subprocess.check_call(f"make {stan_file}", shell=True, cwd=ROOT)
-    subprocess.check_call(f"./run", shell=True, cwd=os.path.join(BUILD, example))
+    subprocess.check_call(f"./{example}", shell=True, cwd=FORMAT)
 
 
 @pytest.mark.parametrize("example", PASS)

@@ -4,6 +4,10 @@ ifndef MAKECMDGOALS
 $(error No Stan file set; try make examples/bernoulli.stan)
 endif
 
+ifeq ("$(wildcard $(MAKECMDGOALS))", "")
+$(error Stan model $(MAKECMDGOALS) does not exist)
+endif
+
 PS_STAN_FILE_NAME := $(abspath $(MAKECMDGOALS))
 
 # Set PolyChord vars
@@ -11,11 +15,6 @@ PS_STAN_FILE_NAME := $(abspath $(MAKECMDGOALS))
 PS_POLYCHORD ?= $(abspath ./PolyChordLite)
 PS_POLYCHORD_VERSION := $(shell grep 'version' $(PS_POLYCHORD)/src/polychord/feedback.f90 | grep -oe '[0-9]\+\.[0-9]\+\.[0-9]')
 PS_POLYCHORD_LDLIBS := -L$(PS_POLYCHORD)/lib/ -lchord -Wl,-rpath $(PS_POLYCHORD)/lib/
-
-# Set model-specific vars
-
-PS_EXE := $(basename $(PS_STAN_FILE_NAME))
-PS_STAN_MODEL_NAME := $(notdir $(PS_EXE))
 
 # Set PolyStan vars
 
@@ -30,6 +29,11 @@ PS_STAN_FUNCTIONS := $(abspath ./stanfunctions)
 BS_ROOT ?= $(abspath ./bridgestan)
 $(info Including BridgeStan from $(BS_ROOT)/Makefile)
 include $(BS_ROOT)/Makefile
+
+# Set model-specific vars
+
+PS_EXE := $(basename $(PS_STAN_FILE_NAME))$(EXE)
+PS_STAN_MODEL_NAME := $(notdir $(basename $(PS_STAN_FILE_NAME)))
 
 # Set build flags
 
@@ -47,13 +51,8 @@ endif
 
 # Define targets
 
-.PHONY: $(MAKECMDGOALS)
-
-$(MAKECMDGOALS): $(PS_STAN_FILE_NAME) $(PS_EXE)
+$(MAKECMDGOALS): $(PS_EXE)
 	$(info Built Stan model $(PS_STAN_FILE_NAME) to $(PS_EXE) in $(PS_BUILD))
-
-$(PS_STAN_FILE_NAME):
-	$(error Stan model $(PS_STAN_FILE_NAME) does not exist)
 
 $(PS_POLYCHORD)/lib/libchord.so:
 	make -C $(PS_POLYCHORD)

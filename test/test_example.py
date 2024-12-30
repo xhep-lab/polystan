@@ -47,11 +47,11 @@ def run_cli(example):
     if os.path.isfile(data_file):
         args["data"] = {"file": data_file}
 
-    return subprocess.check_call(f"./run {cli_args(**args)}", shell=True, cwd=os.path.join(BUILD, example))
+    return subprocess.check_call(f"./{example} {cli_args(**args)}", shell=True, cwd=EXAMPLE)
 
 
 def read_evidence(example):
-    result_name = os.path.join(BUILD, example, f"{example}.json")
+    result_name = os.path.join(EXAMPLE, f"{example}.json")
     with open(result_name, "r", encoding="utf-8") as result_file:
         result = json.load(result_file)
     return result["evidence"]["log evidence"]
