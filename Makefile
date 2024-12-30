@@ -70,5 +70,5 @@ $(PS_SRC)/polystan.o: $(PS_SRC)/polystan.cpp $(PS_POLYCHORD)/lib/libchord.so
 $(PS_BUILD)/metadata.o: $(PS_SRC)/metadata.cpp
 	$(COMPILE.cpp) -D PS_STAN_FILE_NAME=$(PS_STAN_FILE_NAME) -D PS_STAN_MODEL_NAME=$(PS_STAN_MODEL_NAME) -I$(PS_SRC) $< -o $@
 
-$(PS_EXE): $(PS_SRC)/polystan.o $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o $(PS_BUILD)/metadata.o $(PS_POLYCHORD)/lib/libchord.so $(BRIDGE_O)
+$(PS_EXE): $(PS_SRC)/polystan.o $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o $(PS_BUILD)/metadata.o $(PS_POLYCHORD)/lib/libchord.so $(BRIDGE_O) $(SUNDIALS_TARGETS) $(MPI_TARGETS) $(TBB_TARGETS)
 	$(LINK.cpp) -o $@ $< $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o $(PS_BUILD)/metadata.o $(BRIDGE_O) $(PS_POLYCHORD_LDLIBS) $(LDLIBS)
