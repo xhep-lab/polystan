@@ -10,7 +10,7 @@ Bernoulli
 ## Build & run
 
 ```bash
-make PS_MODEL=./examples/bernoulli.stan  # builds everything required for this model
+make examples/bernoulli.stan  # builds everything required for this model
 ./build/bernoulli/run data --file examples/bernoulli.data.json  # runs model
 ```
 
