@@ -24,19 +24,19 @@ git submodule update --init --recursive  # update an existing clone
 ```
 Lastly, build and run a model, e.g.,
 ```bash
-make examples/bernoulli.stan  # builds everything required for this model
-./build/bernoulli/run data --file examples/bernoulli.data.json  # runs model
+make examples/bernoulli  # builds everything required for this model
+./examples/bernoulli data --file examples/bernoulli.data.json  # runs model
 ```
 ## Run
 
 After building a model, try
 ```bash
-./build/bernoulli/run data --file examples/bernoulli.data.json  # runs model
+./examples/bernoulli data --file examples/bernoulli.data.json  # runs model
 ```
 For further runtime options, see
 ```bash
-./build/bernoulli/run --help  # options
-./build/bernoulli/run polychord --help  # polychord options
+./examples/bernoulli --help  # options
+./examples/bernoulli polychord --help  # polychord options
 ```
 
 For a complete workflow, including plotting, see [EXAMPLE.md](EXAMPLE.md).

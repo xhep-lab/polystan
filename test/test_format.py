@@ -22,8 +22,8 @@ FAIL = [f for f in ALL if f not in PASS]
 
 
 def build_and_run(example):
-    stan_file = f"{os.path.join(FORMAT, example)}.stan"
-    subprocess.check_call(f"make {stan_file}", shell=True, cwd=ROOT)
+    target = os.path.join(FORMAT, example)
+    subprocess.check_call(f"make {target}", shell=True, cwd=ROOT)
     subprocess.check_call(f"./{example}", shell=True, cwd=FORMAT)
 
 

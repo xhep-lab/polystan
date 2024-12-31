@@ -1,6 +1,6 @@
 # build everything required for this model
 
-make ./examples/bernoulli.stan  
+make ./examples/bernoulli
 
 # run model with fixed seeds
 

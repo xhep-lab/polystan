@@ -27,8 +27,8 @@ SEED = 127
 
 
 def make_polystan(example):
-    stan_file = f"{os.path.join(EXAMPLE, example)}.stan"
-    subprocess.check_call(f"make {stan_file}", shell=True, cwd=ROOT)
+    target = os.path.join(EXAMPLE, example)
+    subprocess.check_call(f"make {target}", shell=True, cwd=ROOT)
 
 
 def cli_subargs(**kwargs):
