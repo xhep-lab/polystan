@@ -59,13 +59,13 @@ $(PS_POLYCHORD)/lib/libchord.so: $(PS_POLYCHORD)/src
 $(PS_BUILD):
 	mkdir -p $(PS_BUILD)
 
-$(PS_BUILD)/$(PS_STAN_MODEL_NAME).hpp: | $(PS_BUILD) $(STANC) $(PS_STAN_FILE_NAME)
+$(PS_BUILD)/$(PS_STAN_MODEL_NAME).hpp: $(STANC) $(PS_STAN_FILE_NAME) | $(PS_BUILD)
 	$(STANC) $(STANCFLAGS) --o=$@ $(PS_STAN_FILE_NAME)
 
 $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o: $(PS_BUILD)/$(PS_STAN_MODEL_NAME).hpp
 	$(COMPILE.cpp) -w -x c++ -o $@ $<
 
-$(PS_BUILD)/polystan.o: $(PS_SRC)/polystan.cpp $(PS_POLYCHORD)/lib/libchord.so
+$(PS_BUILD)/polystan.o: $(PS_SRC)/polystan.cpp $(PS_POLYCHORD)/lib/libchord.so | $(PS_BUILD)
 	$(COMPILE.cpp) -D PS_POLYCHORD_VERSION=$(PS_POLYCHORD_VERSION) -I$(PS_SRC) $< -o $@
 
 $(PS_BUILD)/$(PS_STAN_MODEL_NAME)_metadata.o: $(PS_SRC)/metadata.cpp $(PS_STAN_FILE_NAME)
