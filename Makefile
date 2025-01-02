@@ -72,7 +72,7 @@ $(PS_BUILD)/polystan.o: $(PS_SRC)/polystan.cpp $(PS_POLYCHORD)/lib/libchord.so |
 $(PS_BUILD)/$(PS_STAN_MODEL_NAME)_metadata.o: $(PS_SRC)/metadata.cpp $(PS_STAN_FILE_NAME)
 	$(COMPILE.cpp) -D PS_STAN_FILE_NAME=$(PS_STAN_FILE_NAME) -D PS_STAN_MODEL_NAME=$(PS_STAN_MODEL_NAME) -I$(PS_SRC) $< -o $@
 
-%:: %.stan $(BS_ROOT)/src $(PS_BUILD)/polystan.o $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o $(PS_BUILD)/$(PS_STAN_MODEL_NAME)_metadata.o $(PS_POLYCHORD)/lib/libchord.so $(BRIDGE_O) $(TBB_TARGETS)
+%: %.stan $(BS_ROOT)/src $(PS_BUILD)/polystan.o $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o $(PS_BUILD)/$(PS_STAN_MODEL_NAME)_metadata.o $(PS_POLYCHORD)/lib/libchord.so $(BRIDGE_O) $(TBB_TARGETS)
 	$(LINK.cpp) -o $(PS_EXE) $(PS_BUILD)/polystan.o $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o $(PS_BUILD)/$(PS_STAN_MODEL_NAME)_metadata.o $(BRIDGE_O) $(PS_POLYCHORD_LDLIBS) $(LDLIBS)
 
 # Define phony targets
