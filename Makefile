@@ -1,9 +1,3 @@
-# Check the Stan model file name
-
-ifndef MAKECMDGOALS
-$(error No Stan model set; try make examples/bernoulli)
-endif
-
 # Set PolyChord vars
 
 PS_POLYCHORD ?= $(abspath ./PolyChordLite)
@@ -24,7 +18,7 @@ BS_ROOT ?= $(abspath ./bridgestan)
 
 # Set model-specific vars
 
-PS_EXE := $(MAKECMDGOALS)
+PS_EXE := $(MAKECMDGOALS)$(EXE)
 PS_STAN_FILE_NAME := $(abspath $(MAKECMDGOALS)).stan
 PS_STAN_MODEL_NAME := $(notdir $(basename $(PS_STAN_FILE_NAME)))
 
@@ -42,10 +36,7 @@ override CXXFLAGS += -DUSE_MPI
 override CXX = mpic++
 endif
 
-# Define targets
-
-$(PS_STAN_FILE_NAME):
-	$(error Stan model $(PS_STAN_FILE_NAME) does not exist)
+# Define real targets
 
 $(PS_POLYCHORD)/src:
 	$(error Code $(PS_POLYCHORD) does not exist - try git submodule update --init --recursive)
@@ -54,12 +45,12 @@ $(BS_ROOT)/src:
 	$(error Code $(BS_ROOT) does not exist - try git submodule update --init --recursive)
 
 $(PS_POLYCHORD)/lib/libchord.so: $(PS_POLYCHORD)/src
-	make -C $(PS_POLYCHORD)
+	$(MAKE) -C $(PS_POLYCHORD)
 
 $(PS_BUILD):
 	mkdir -p $(PS_BUILD)
 
-$(PS_BUILD)/$(PS_STAN_MODEL_NAME).hpp: $(STANC) $(PS_STAN_FILE_NAME) | $(PS_BUILD)
+$(PS_BUILD)/$(PS_STAN_MODEL_NAME).hpp: $(PS_STAN_FILE_NAME) | $(PS_BUILD)
 	$(STANC) $(STANCFLAGS) --o=$@ $(PS_STAN_FILE_NAME)
 
 $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o: $(PS_BUILD)/$(PS_STAN_MODEL_NAME).hpp
@@ -71,5 +62,22 @@ $(PS_BUILD)/polystan.o: $(PS_SRC)/polystan.cpp $(PS_POLYCHORD)/lib/libchord.so |
 $(PS_BUILD)/$(PS_STAN_MODEL_NAME)_metadata.o: $(PS_SRC)/metadata.cpp $(PS_STAN_FILE_NAME)
 	$(COMPILE.cpp) -D PS_STAN_FILE_NAME=$(PS_STAN_FILE_NAME) -D PS_STAN_MODEL_NAME=$(PS_STAN_MODEL_NAME) -I$(PS_SRC) $< -o $@
 
-$(PS_EXE): $(BS_ROOT)/src $(PS_BUILD)/polystan.o $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o $(PS_BUILD)/$(PS_STAN_MODEL_NAME)_metadata.o $(PS_POLYCHORD)/lib/libchord.so $(BRIDGE_O) $(TBB_TARGETS)
-	$(LINK.cpp) -o $@ $(PS_BUILD)/polystan.o $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o $(PS_BUILD)/$(PS_STAN_MODEL_NAME)_metadata.o $(BRIDGE_O) $(PS_POLYCHORD_LDLIBS) $(LDLIBS)
+%:: %.stan $(BS_ROOT)/src $(PS_BUILD)/polystan.o $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o $(PS_BUILD)/$(PS_STAN_MODEL_NAME)_metadata.o $(PS_POLYCHORD)/lib/libchord.so $(BRIDGE_O) $(TBB_TARGETS)
+	$(LINK.cpp) -o $(PS_EXE) $(PS_BUILD)/polystan.o $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o $(PS_BUILD)/$(PS_STAN_MODEL_NAME)_metadata.o $(BRIDGE_O) $(PS_POLYCHORD_LDLIBS) $(LDLIBS)
+
+%::
+	@test -f $(PS_STAN_FILE_NAME) || echo Stan model $(PS_STAN_FILE_NAME) does not exist && false
+
+# Define phony targets
+
+.DEFAULT_GOAL := NO_STAN_FILE
+.PHONY: NO_STAN_FILE
+NO_STAN_FILE:
+	$(error No Stan program set; try make examples/bernoulli)
+
+.PHONY: clean-polystan
+clean-polystan:
+	$(RM) $(PS_BUILD)/*.o
+	$(RM) $(PS_BUILD)/*.hpp
+
+clean: clean-polystan
