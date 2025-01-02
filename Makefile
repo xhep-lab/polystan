@@ -22,10 +22,14 @@ PS_EXE := $(MAKECMDGOALS)$(EXE)
 PS_STAN_FILE_NAME := $(abspath $(MAKECMDGOALS)).stan
 PS_STAN_MODEL_NAME := $(notdir $(basename $(PS_STAN_FILE_NAME)))
 
-ifdef MAKECMDGOALS
+# Preliminary checks
+
+ifndef MAKECMDGOALS
+$(error No Stan program set; try make examples/bernoulli)
+endif
+
 ifeq (,$(wildcard $(PS_STAN_FILE_NAME)))
 $(warning Stan model $(PS_STAN_FILE_NAME) does not exist)
-endif
 endif
 
 # Set build flags
@@ -72,11 +76,6 @@ $(PS_BUILD)/$(PS_STAN_MODEL_NAME)_metadata.o: $(PS_SRC)/metadata.cpp $(PS_STAN_F
 	$(LINK.cpp) -o $(PS_EXE) $(PS_BUILD)/polystan.o $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o $(PS_BUILD)/$(PS_STAN_MODEL_NAME)_metadata.o $(BRIDGE_O) $(PS_POLYCHORD_LDLIBS) $(LDLIBS)
 
 # Define phony targets
-
-.DEFAULT_GOAL := NO_TARGET
-.PHONY: NO_TARGET
-NO_TARGET:
-	$(error No Stan program set; try make examples/bernoulli)
 
 .PHONY: clean-polystan
 clean-polystan:
