@@ -70,9 +70,9 @@ $(PS_BUILD)/$(PS_STAN_MODEL_NAME)_metadata.o: $(PS_SRC)/metadata.cpp $(PS_STAN_F
 
 # Define phony targets
 
-.DEFAULT_GOAL := NO_STAN_FILE
-.PHONY: NO_STAN_FILE
-NO_STAN_FILE:
+.DEFAULT_GOAL := NO_TARGET
+.PHONY: NO_TARGET
+NO_TARGET:
 	$(error No Stan program set; try make examples/bernoulli)
 
 .PHONY: clean-polystan
@@ -81,3 +81,15 @@ clean-polystan:
 	$(RM) $(PS_BUILD)/*.hpp
 
 clean: clean-polystan
+
+.PHONY: format-polystan
+format-polystan:
+	clang-format -i src/*.cpp src/polystan/*.hpp || $(BS_FORMAT_IGNOREABLE)
+	isort *.py || $(BS_FORMAT_IGNOREABLE)
+	black *.py || $(BS_FORMAT_IGNOREABLE)
+
+format: format-polystan
+
+.PHONY: polystan-update
+polystan-update:
+	git submodule update --init --recursive
