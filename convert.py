@@ -11,6 +11,7 @@ from contextlib import redirect_stdout
 
 from cmdstanpy import cmdstan_path, format_stan_file
 
+
 TYPES = ["real", "vector", "matrix"]
 
 
@@ -24,7 +25,8 @@ def stan_format(file_name):
 
 
 def parameter_names(file_name):
-    str_ = subprocess.check_output([f"{cmdstan_path()}/bin/stanc", "--info", file_name])
+    str_ = subprocess.check_output(
+        [f"{cmdstan_path()}/bin/stanc", "--info", file_name])
     names = json.loads(str_)["parameters"].keys()
     return {f"u{i + 1}": k for i, k in enumerate(names)}
 
