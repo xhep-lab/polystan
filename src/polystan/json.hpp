@@ -6,6 +6,8 @@
 #include <rapidjson/prettywriter.h>
 
 #include <string>
+#include <fstream>
+#include <sstream>
 #include <utility>
 #include <vector>
 
