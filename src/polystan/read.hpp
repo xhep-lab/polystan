@@ -11,20 +11,21 @@
 namespace polystan {
 namespace read {
 
-std::vector<std::string> param_names(std::string csv) {
-  std::stringstream ss(csv);
+std::vector<std::string> param_names(const std::string& csv) {
+  std::stringstream stream(csv);
   std::vector<std::string> result;
 
-  while (ss.good()) {
+  while (stream.good()) {
     std::string substr;
-    std::getline(ss, substr, ',');
+    std::getline(stream, substr, ',');
     result.push_back(substr);
   }
 
   return result;
 }
 
-std::vector<std::vector<double>> samples(std::string equal_weights_file_name) {
+std::vector<std::vector<double>> samples(
+    const std::string& equal_weights_file_name) {
   std::ifstream ifs(equal_weights_file_name);
 
   if (!ifs) {
@@ -36,10 +37,10 @@ std::vector<std::vector<double>> samples(std::string equal_weights_file_name) {
   std::string record;
 
   while (std::getline(ifs, record)) {
-    std::istringstream is(record);
-    std::istream_iterator<double> it(is);
-    it++;  // we ignore weight column
-    std::vector<double> row((it), std::istream_iterator<double>());
+    std::istringstream iss(record);
+    std::istream_iterator<double> iter(iss);
+    iter++;  // we ignore weight column
+    std::vector<double> row((iter), std::istream_iterator<double>());
 
     if (data.empty()) {
       data.resize(row.size());
@@ -57,7 +58,7 @@ std::vector<std::vector<double>> samples(std::string equal_weights_file_name) {
   return data;
 }
 
-std::array<double, 2> evidence(std::string stats_file_name) {
+std::array<double, 2> evidence(const std::string& stats_file_name) {
   const std::string prefix = "log(Z)       =";
   const std::string delim = "+/-";
 

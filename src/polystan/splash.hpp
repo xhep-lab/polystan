@@ -17,14 +17,14 @@ const char RESET[] = "\x1B[0m";
 const char COLOR[] = "\x1B[34m";
 
 template <class T>
-std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
+std::ostream& operator<<(std::ostream& out, const std::vector<T>& vec) {
   out << '[';
 
-  for (const auto& e : v) {
-    out << e << ", ";
+  for (const auto& elem : vec) {
+    out << elem << ", ";
   }
 
-  if (!v.empty()) {
+  if (!vec.empty()) {
     out << "\b\b";
   }
 
@@ -32,7 +32,7 @@ std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
   return out;
 }
 
-std::string start(const Model& model, std::string toml_file_name) {
+std::string start(const Model& model, const std::string& toml_file_name) {
   std::stringstream splash;
 
   splash << COLOR << PREFIX << "PolyStan\n"
@@ -57,7 +57,7 @@ std::string start(const Model& model, std::string toml_file_name) {
   return splash.str();
 }
 
-std::string end(std::string json_file_name, const Model& model) {
+std::string end(const std::string& json_file_name, const Model& model) {
   std::stringstream splash;
 
   splash << COLOR << "\n"

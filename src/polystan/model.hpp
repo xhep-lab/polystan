@@ -5,6 +5,7 @@
 #include <limits>
 #include <regex>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "polystan/read.hpp"
@@ -21,20 +22,20 @@ namespace polystan {
 
 std::optional<std::string> unconstrain_err(bs_model* model,
                                            std::vector<double> theta) {
-  double theta_unc[theta.size()];
+  std::vector<double> theta_unc(theta.size());
   char* err;
   const int err_code
-      = bs_param_unconstrain(model, theta.data(), theta_unc, &err);
+      = bs_param_unconstrain(model, theta.data(), theta_unc.data(), &err);
   return err_code == 0 ? std::nullopt
                        : std::optional<std::string>(add_to_err(err));
 }
 
-bs_model* make_bs_model(std::string data_file_name, unsigned int seed) {
+bs_model* make_bs_model(const std::string& data_file_name, unsigned int seed) {
   char* err;
 
   bs_model* model = bs_model_construct(data_file_name.c_str(), seed, &err);
 
-  if (!model && err) {
+  if ((model == nullptr) && (err != nullptr)) {
     std::string err_msg = add_to_err(err);
     if (data_file_name.empty()) {
       err_msg += "\nDid your model require a data file to be specified e.g. by data --file=your-data-file.json?\n";
@@ -46,14 +47,14 @@ bs_model* make_bs_model(std::string data_file_name, unsigned int seed) {
 }
 
 bs_rng* make_bs_rng(bs_model* model, unsigned int seed) {
-  if (bs_param_num(model, 0, 1) == bs_param_num(model, 0, 0)) {
+  if (bs_param_num(model, false, true) == bs_param_num(model, false, false)) {
     return nullptr;
   }
 
   char* err;
   bs_rng* rng = bs_rng_construct(seed, &err);
 
-  if (!rng && err) {
+  if ((rng == nullptr) && (err != nullptr)) {
     throw std::runtime_error(add_to_err(err));
   }
 
@@ -67,8 +68,8 @@ double loglike(bs_model* model, bs_rng* rng, double* theta, int ndim,
 
   // compute unconstrained parameters
 
-  double theta_unc[ndim];
-  err_code = bs_param_unconstrain(model, theta, theta_unc, &err);
+  std::vector<double> theta_unc(ndim);
+  err_code = bs_param_unconstrain(model, theta, theta_unc.data(), &err);
 
   if (err_code != 0) {
     throw std::runtime_error(add_to_err(err));
@@ -76,9 +77,9 @@ double loglike(bs_model* model, bs_rng* rng, double* theta, int ndim,
 
   // constrain parameters to compute derived
 
-  double theta_phi[ndim + nderived];
-  err_code = bs_param_constrain(model, 1, rng != nullptr, theta_unc, theta_phi,
-                                rng, &err);
+  std::vector<double> theta_phi(ndim + nderived);
+  err_code = bs_param_constrain(model, true, rng != nullptr, theta_unc.data(),
+                                theta_phi.data(), rng, &err);
 
   if (err_code != 0) {
     throw std::runtime_error(add_to_err(err));
@@ -91,7 +92,8 @@ double loglike(bs_model* model, bs_rng* rng, double* theta, int ndim,
   // compute density - stan works on unconstrained space
 
   double loglike;
-  err_code = bs_log_density(model, 0, 0, theta_unc, &loglike, &err);
+  err_code
+      = bs_log_density(model, false, false, theta_unc.data(), &loglike, &err);
 
   if (err_code != 0) {
     throw std::runtime_error(add_to_err(err));
@@ -102,12 +104,12 @@ double loglike(bs_model* model, bs_rng* rng, double* theta, int ndim,
 
 class Model {
  public:
-  Model(std::string data_file_name, unsigned int seed, Settings settings)
+  Model(const std::string& data_file_name, unsigned int seed, Settings settings)
       : seed(seed),
         data_file_name(data_file_name),
         model(make_bs_model(data_file_name, seed)),
         rng(make_bs_rng(model, seed)),
-        settings(settings) {
+        settings(std::move(settings)) {
     check_unit_hypercube();
     fix_settings();
   }
@@ -131,17 +133,17 @@ class Model {
         throw std::runtime_error(one_err.value() + msg);
       }
 
-      std::vector<double> gt(ndims(), 0.5);
-      gt[i] = 1. + std::numeric_limits<double>::round_error();
-      const auto gt_err = unconstrain_err(model, gt);
+      std::vector<double> gt_one(ndims(), 0.5);
+      gt_one[i] = 1. + std::numeric_limits<double>::round_error();
+      const auto gt_err = unconstrain_err(model, gt_one);
       if (!gt_err.has_value()) {
         throw std::runtime_error("> 1 was not out of bounds for parameter "
                                  + param_names()[i] + msg);
       }
 
-      std::vector<double> lt(ndims(), 0.5);
-      lt[i] = -std::numeric_limits<double>::round_error();
-      const auto lt_err = unconstrain_err(model, lt);
+      std::vector<double> lt_zero(ndims(), 0.5);
+      lt_zero[i] = -std::numeric_limits<double>::round_error();
+      const auto lt_err = unconstrain_err(model, lt_zero);
       if (!lt_err.has_value()) {
         throw std::runtime_error("< 0 was not out of bounds for parameter "
                                  + param_names()[i] + msg);
@@ -167,7 +169,7 @@ class Model {
 #endif
   }
 
-  void write(std::string json_file_name) const {
+  void write(const std::string& json_file_name) const {
     // polystan metadata
 
     json::Object polystan;
@@ -239,7 +241,7 @@ class Model {
   }
 
   std::vector<std::string> names() const {
-    return read::param_names(bs_param_names(model, 1, 1));
+    return read::param_names(bs_param_names(model, true, true));
   }
 
   std::vector<std::string> param_names() const {
@@ -252,10 +254,10 @@ class Model {
     return std::vector<std::string>(names_.begin() + ndims(), names_.end());
   }
 
-  int ndims() const { return bs_param_num(model, 0, 0); }
+  int ndims() const { return bs_param_num(model, false, false); }
 
   int nderived() const {
-    return bs_param_num(model, 1, 1) - bs_param_num(model, 0, 0);
+    return bs_param_num(model, true, true) - bs_param_num(model, false, false);
   }
 
   std::string basename() const {

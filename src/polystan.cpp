@@ -18,7 +18,7 @@ namespace ps = polystan;
 template <typename T>
 class Display {
  public:
-  Display(T data) : data(data) {}
+  explicit Display(T data) : data(data) {}
   void operator()(int flag) {
     if (flag > 0) {
       throw CLI::CallForVersion(data, CLI::ExitCodes::Success);
@@ -68,8 +68,8 @@ int main(int argc, char** argv) {
 
   // add options to cli
 
-  CLI::App* pc = app.add_subcommand("polychord", "PolyChord settings");
-  ps::AddPolyChord(pc, &settings);
+  CLI::App* pc_cli = app.add_subcommand("polychord", "PolyChord settings");
+  ps::AddPolyChord(pc_cli, &settings);
 
   CLI::App* data = app.add_subcommand("data", "Data settings");
   std::string data_file_name;
@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
   const ps::Model model = optional_model.value();
 
   if (ps::mpi::is_rank_zero()) {
-    std::cout << ps::splash::start(model, toml_file_name) << std::endl;
+    std::cout << ps::splash::start(model, toml_file_name) << "\n";
   }
 
   ps::mpi::barrier();
@@ -137,7 +137,7 @@ int main(int argc, char** argv) {
 
   if (ps::mpi::is_rank_zero()) {
     model.write(json_file_name);
-    std::cout << ps::splash::end(json_file_name, model) << std::endl;
+    std::cout << ps::splash::end(json_file_name, model) << "\n";
   }
 
   ps::mpi::finalize();

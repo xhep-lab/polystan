@@ -6,6 +6,7 @@
 #include <rapidjson/prettywriter.h>
 
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace polystan {
@@ -15,23 +16,23 @@ namespace rj = rapidjson;
 typedef rapidjson::MemoryPoolAllocator<> Alloc;
 
 Alloc& get_allocator() {
-  static rj::GenericDocument<rj::UTF8<>> d;
-  return d.GetAllocator();
+  static rj::GenericDocument<rj::UTF8<>> doc;
+  return doc.GetAllocator();
 }
 
 template <typename T>
-rj::Value Vector(const std::vector<T>& f, Alloc& alloc) {
+rj::Value Vector(const std::vector<T>& vec, Alloc& alloc) {
   rj::Value value(rj::kArrayType);
-  value.Reserve(f.size(), alloc);
-  for (const T& e : f) {
-    value.PushBack(e, alloc);
+  value.Reserve(vec.size(), alloc);
+  for (const T& elem : vec) {
+    value.PushBack(elem, alloc);
   }
   return value;
 }
 
-rj::Value String(std::string f, Alloc& alloc) {
+rj::Value String(const std::string& str, Alloc& alloc) {
   rj::Value value(rj::kStringType);
-  value.SetString(f.c_str(), f.size(), alloc);
+  value.SetString(str.c_str(), str.size(), alloc);
   return value;
 }
 
@@ -40,22 +41,24 @@ class Object {
   Object() : value(rj::kObjectType), alloc(get_allocator()) {}
 
   template <typename T>
-  void add(std::string name, const std::vector<T>& data) {
+  void add(const std::string& name, const std::vector<T>& data) {
     value.AddMember(String(name, alloc).Move(), Vector(data, alloc).Move(),
                     alloc);
   }
 
   template <typename T>
-  void add(std::string name, T data) {
+  void add(const std::string& name, T data) {
     value.AddMember(String(name, alloc).Move(), data, alloc);
   }
 
-  void add(std::string name, const char* data) {
+  void add(const std::string& name, const char* data) {
     value.AddMember(String(name, alloc).Move(), String(data, alloc).Move(),
                     alloc);
   }
 
-  void add(std::string name, std::string data) { add(name, data.c_str()); }
+  void add(const std::string& name, const std::string& data) {
+    add(name, data.c_str());
+  }
 
   template <typename T>
   void add(std::vector<std::string> names, std::vector<T> data) {
@@ -64,7 +67,7 @@ class Object {
     }
   }
 
-  void add(std::string name, Object& child) {
+  void add(const std::string& name, Object& child) {
     value.AddMember(String(name, alloc).Move(), child.value.Move(), alloc);
   }
 
@@ -73,13 +76,13 @@ class Object {
     value = value_;
   }
 
-  void set(std::string value_) {
+  void set(const std::string& value_) {
     value.SetString(value_.c_str(), value_.size(), alloc);
   }
 
   void set(const char* value_) { set(std::string(value_)); }
 
-  void write(std::string json_file_name) {
+  void write(const std::string& json_file_name) {
     std::ofstream ofs(json_file_name);
     rj::OStreamWrapper osw(ofs);
     rj::PrettyWriter<rj::OStreamWrapper> writer(osw);
