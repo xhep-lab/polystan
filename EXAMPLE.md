@@ -10,8 +10,8 @@ Bernoulli
 ## Build & run
 
 ```bash
-make examples/bernoulli.stan  # builds everything required for this model
-./build/bernoulli/run data --file examples/bernoulli.data.json  # runs model
+make examples/bernoulli  # builds everything required for this model
+./examples/bernoulli data --file examples/bernoulli.data.json  # runs model
 ```
 
 This produces data from polystan
@@ -34,7 +34,7 @@ bernoulli_prior.txt
 
 For future reference, you can re-run with identical settings by
 ```
-./build/bernoulli/run --from-toml bernoulli.toml
+./examples/bernoulli --from-toml bernoulli.toml
 ```
 
 ## Analyse
