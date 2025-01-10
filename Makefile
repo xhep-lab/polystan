@@ -35,10 +35,10 @@ endif
 # Set build flags
 
 MPI ?= 1
-PS_STAN_FLAGS := --include-paths $(PS_STAN_FUNCTIONS) --warn-pedantic --warn-uninitialized --O1
+PS_STANC_FLAGS := --include-paths $(PS_STAN_FUNCTIONS) --warn-pedantic --warn-uninitialized --O1
 
 override CXXFLAGS += -I$(PS_POLYCHORD)/src/ -I$(BS_ROOT)/..
-override STANCFLAGS += $(PS_STAN_FLAGS)
+override STANCFLAGS += $(PS_STANC_FLAGS)
 
 ifeq ($(MPI), 1)
 override LDLIBS += -lmpi
