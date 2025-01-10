@@ -49,8 +49,10 @@ std::string start(const Model& model, const std::string& toml_file_name) {
          << PREFIX << "\n"
 #ifdef USE_MPI
          << PREFIX << "Using MPI with size: " << mpi::get_size() << "\n"
-         << PREFIX << "\n"
+#else
+         << PREFIX << "Not compiled with MPI" << "\n"
 #endif
+         << PREFIX << "\n"
          << PREFIX << "Running PolyChord\n"
          << RESET;
 
