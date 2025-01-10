@@ -34,17 +34,19 @@ endif
 
 # Set build flags
 
-PS_MPI ?= 1
+MPI ?= 1
 PS_STAN_FLAGS := --include-paths $(PS_STAN_FUNCTIONS) --warn-pedantic --warn-uninitialized --O1
 
 override CXXFLAGS += -I$(PS_POLYCHORD)/src/ -I$(BS_ROOT)/..
 override STANCFLAGS += $(PS_STAN_FLAGS)
 
-ifdef PS_MPI
+ifeq ($(MPI), 1)
 override LDLIBS += -lmpi
 override CXXFLAGS += -DUSE_MPI
 override CXX = mpic++
 endif
+
+export MPI
 
 # Define real targets
 
@@ -82,7 +84,11 @@ clean-polystan:
 	$(RM) $(PS_BUILD)/*.o
 	$(RM) $(PS_BUILD)/*.hpp
 
-clean: clean-polystan
+.PHONY: clean-polychord
+clean-polychord:
+	$(MAKE) -C $(PS_POLYCHORD) veryclean
+
+clean: clean-polystan clean-polychord
 
 .PHONY: format-polystan
 format-polystan:
