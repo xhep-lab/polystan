@@ -169,7 +169,8 @@ class Model {
 #endif
   }
 
-  void write(const std::string& json_file_name) const {
+  void write(const std::string& json_file_name,
+             const std::string& toml_file_name) const {
     // polystan metadata
 
     json::Object polystan;
@@ -177,6 +178,7 @@ class Model {
     polystan.add("polystan version", version);
     polystan.add("stan file name", stan_file_name);
     polystan.add("stan data file", data_file_name);
+    polystan.add("polystan toml file", toml_file_name);
     polystan.add("stan build info", stan_build_info());
     polystan.add("seed", seed);
 

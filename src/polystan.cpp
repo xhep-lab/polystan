@@ -84,10 +84,12 @@ int main(int argc, char** argv) {
       ->check(CLI::NonNegativeNumber);
 
   CLI::App* output = app.add_subcommand("output", "Control Stan output");
-  std::string json_file_name = std::string(ps::stan_model_name) + ".json";
+  std::string json_file_name = std::filesystem::weakly_canonical(
+      std::string(ps::stan_model_name) + ".json");
   output->add_option("--json-file", json_file_name, "JSON file output name")
       ->transform(weakly_canonical);
-  std::string toml_file_name = std::string(ps::stan_model_name) + ".toml";
+  std::string toml_file_name = std::filesystem::weakly_canonical(
+      std::string(ps::stan_model_name) + ".toml");
   output->add_option("--toml-file", toml_file_name, "TOML file output name")
       ->transform(weakly_canonical);
 
@@ -136,7 +138,7 @@ int main(int argc, char** argv) {
   // write results to disk in json format
 
   if (ps::mpi::is_rank_zero()) {
-    model.write(json_file_name);
+    model.write(json_file_name, toml_file_name);
     std::cout << ps::splash::end(json_file_name, model) << "\n";
   }
 
