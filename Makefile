@@ -101,3 +101,7 @@ format: format-polystan
 .PHONY: polystan-update
 polystan-update:
 	git submodule update --init --recursive
+
+.PHONY: test-polystan
+test-polystan:
+	pytest ./test/
