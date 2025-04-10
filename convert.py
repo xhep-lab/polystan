@@ -4,15 +4,11 @@ Script to ease writing PolyStan models
 """
 
 import io
-import json
-import subprocess
 import sys
+import re
 from contextlib import redirect_stdout
 
-from cmdstanpy import cmdstan_path, format_stan_file
-
-
-TYPES = ["real", "vector", "matrix"]
+from cmdstanpy import format_stan_file, compilation
 
 
 def stan_format(file_name):
@@ -24,102 +20,68 @@ def stan_format(file_name):
     return f.getvalue().strip()
 
 
-def parameter_names(file_name):
-    str_ = subprocess.check_output(
-        [f"{cmdstan_path()}/bin/stanc", "--info", file_name])
-    names = json.loads(str_)["parameters"].keys()
-    return {f"u{i + 1}": k for i, k in enumerate(names)}
+def find_parameter_names(file_name):
+    data = compilation.src_info(file_name, compilation.CompilerOptions())
+    return data["parameters"]
 
 
-def make_physical(map_, str_):
-    for k, v in map_.items():
-        str_ = str_.replace(v, f"{v} = INVERSE_TRANSFORM({k})")
-    return str_
+def make_physical(parameter_names, line):
+    for p in parameter_names:
+        line = line.replace(f" {p};", f" {p} = INVERSE_TRANSFORM(unit_{p});")
+    return line
 
 
-def make_unit(map_, str_):
-    for k, v in map_.items():
-        str_ = str_.replace(v, k)
+def make_unit(parameter_names, line):
+    line = re.sub(r'<.*?>', "", line)  # remove any existing constraint
 
-    for t in TYPES:
-        str_ = str_.replace(t, f"{t}<lower=0, upper=1>")
+    for p in parameter_names:
+        line = line.replace(f" {p};", f"<lower=0, upper=1> unit_{p};")
 
-    return str_
-
-
-def find_block(src, block):
-    started = False
-
-    for line in src.split("\n"):
-
-        if started and line == "}":
-            return
-
-        if started:
-            yield line
-
-        if line.startswith(f"{block} {{"):
-            started = True
+    return line
 
 
-def before_block(src, block):
-    for line in src.split("\n"):
-        if line.startswith(f"{block} {{"):
-            return
-        yield line
+def split(src):
+    before, after = src.split("parameters {\n", 1)
+    parameters, after = after.split("\n}", 1)
+
+    try:
+        _, after = src.split("transformed parameters {\n", 1)
+        transformed, after = after.split("\n}", 1)
+    except ValueError:
+        transformed = str()
+
+    return before, parameters, transformed, after
 
 
-def after_block(src, block):
-    started = False
-    ended = False
-    for line in src.split("\n"):
-        if ended:
-            yield line
+def convert_file(file_name):
 
-        if line.startswith(f"{block} {{"):
-            started = True
+    src = stan_format(file_name)
+    parameter_names = find_parameter_names(file_name)
+    before, parameters, transformed, after = split(src)
 
-        if started and line == "}":
-            ended = True
-
-
-def convert_parameters(src, map_):
+    yield from before.splitlines()
 
     yield "parameters {"
 
-    for line in find_block(src, "parameters"):
-        line = make_unit(map_, line)
-        yield line
+    for line in parameters.splitlines():
+        yield make_unit(parameter_names, line)
 
     yield "}"
-
-
-def convert_transformed_parameters(src, map_):
 
     yield "transformed parameters {"
 
-    for line in find_block(src, "parameters"):
-        yield make_physical(map_, line)
+    for line in parameters.splitlines():
+        yield make_physical(parameter_names, line)
 
-    yield from find_block(src, "transformed parameters")
+    yield from transformed.splitlines()
 
     yield "}"
+
+    yield from after.splitlines()
+
 
 
 if __name__ == "__main__":
     file_name = sys.argv[1]
-
-    src = stan_format(file_name)
-    map_ = parameter_names(file_name)
-
-    for line in before_block(src, "parameters"):
-        print(line)
-
-    for line in convert_parameters(src, map_):
-        print(line)
-
-    for line in convert_transformed_parameters(src, map_):
-        print(line)
-
-    for line in after_block(src, "transformed parameters"):
+    for line in convert_file(file_name):
         print(line)
