@@ -43,7 +43,9 @@ int main(int argc, char** argv) {
 
   // allow settings from a toml file
 
-  app.set_config("--from-toml", "", "Read CLI settings from a TOML file");
+  CLI::Option* config = app.set_config("--from-toml", "", "Read CLI settings from a TOML file");
+  config->check(CLI::ExistingFile);
+  config->option_text("FILENAME");
   app.allow_config_extras(false);
 
   // capture defaults
@@ -75,7 +77,8 @@ int main(int argc, char** argv) {
   std::string data_file_name;
   data->add_option("--file", data_file_name, "Data file name")
       ->check(CLI::ExistingFile)
-      ->transform(weakly_canonical);
+      ->transform(weakly_canonical)
+      ->option_text("FILENAME");
 
   CLI::App* random
       = app.add_subcommand("random", "Control Stan random number generation");
