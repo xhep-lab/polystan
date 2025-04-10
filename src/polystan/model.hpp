@@ -237,7 +237,6 @@ class Model {
 
   std::string stan_build_info() const {
     std::string build_info = bs_model_info(model);
-    build_info = std::regex_replace(build_info, std::regex("\n"), ", ");
     build_info = std::regex_replace(build_info, std::regex("\t"), "");
     return build_info;
   }

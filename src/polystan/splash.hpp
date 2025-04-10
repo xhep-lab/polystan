@@ -1,6 +1,7 @@
 #ifndef POLYSTAN_SPLASH_HPP_
 #define POLYSTAN_SPLASH_HPP_
 
+#include <regex>
 #include <string>
 #include <sstream>
 #include <vector>
@@ -45,8 +46,15 @@ std::string start(const Model& model, const std::string& toml_file_name) {
          << PREFIX << "Hypercube parameters: " << model.param_names() << "\n"
          << PREFIX << "Derived parameters: " << model.derived_names() << "\n"
          << PREFIX << "\n"
-         << PREFIX << "Stan build info: " << model.stan_build_info() << "\n"
-         << PREFIX << "\n"
+         << PREFIX << "Stan build info:\n";
+
+  std::istringstream ss(model.stan_build_info());
+  std::string line;
+  while (std::getline(ss, line)) {
+    splash << PREFIX << line << "\n";
+  }
+
+  splash << PREFIX << "\n"
 #ifdef USE_MPI
          << PREFIX << "Using MPI with size: " << mpi::get_size() << "\n"
 #else
