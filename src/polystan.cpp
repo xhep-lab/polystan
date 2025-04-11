@@ -43,7 +43,8 @@ int main(int argc, char** argv) {
 
   // allow settings from a toml file
 
-  CLI::Option* config = app.set_config("--from-toml", "", "Read CLI settings from a TOML file");
+  CLI::Option* config
+      = app.set_config("--from-toml", "", "Read CLI settings from a TOML file");
   config->check(CLI::ExistingFile);
   config->option_text("FILENAME");
   app.allow_config_extras(false);

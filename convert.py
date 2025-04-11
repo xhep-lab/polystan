@@ -4,11 +4,11 @@ Script to ease writing PolyStan models
 """
 
 import io
-import sys
 import re
+import sys
 from contextlib import redirect_stdout
 
-from cmdstanpy import format_stan_file, compilation
+from cmdstanpy import compilation, format_stan_file
 
 
 def stan_format(file_name):
@@ -32,7 +32,7 @@ def make_physical(parameter_names, line):
 
 
 def make_unit(parameter_names, line):
-    line = re.sub(r'<.*?>', "", line)  # remove any existing constraint
+    line = re.sub(r"<.*?>", "", line)  # remove any existing constraint
 
     for p in parameter_names:
         line = line.replace(f" {p};", f"<lower=0, upper=1> unit_{p};")
@@ -78,7 +78,6 @@ def convert_file(file_name):
     yield "}"
 
     yield from after.splitlines()
-
 
 
 if __name__ == "__main__":
