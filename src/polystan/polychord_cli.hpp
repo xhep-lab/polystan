@@ -1,10 +1,22 @@
 #ifndef POLYSTAN_POLYCHORD_CLI_HPP_
 #define POLYSTAN_POLYCHORD_CLI_HPP_
 
+#include <iostream>
+
 #include "CLI11/CLI11.hpp"
 #include "polychord/interfaces.hpp"
 
 namespace polystan {
+
+std::string bool2str(bool b) {
+  std::stringstream converter;
+  converter << std::boolalpha << b;
+  return converter.str();
+}
+
+void AddFlag(CLI::App* app, std::string flag, bool& var, std::string help) {
+  app->add_flag(flag, var, help)->default_val(var)->default_str(bool2str(var));
+}
 
 void AddPolyChord(CLI::App* app, Settings* settings) {
   app->add_option("--nlive", settings->nlive,
@@ -32,8 +44,8 @@ void AddPolyChord(CLI::App* app, Settings* settings) {
       "The number of failed spawns before stopping nested sampling. "
       "If -1, defaults to nLive.");
 
-  app->add_flag("--cluster,!--no-cluster", settings->do_clustering,
-                "Whether or not to use clustering at run time.");
+  AddFlag(app, "--cluster,!--no-cluster", settings->do_clustering,
+          "Whether or not to use clustering at run time.");
 
   app->add_option("--feedback", settings->feedback,
                   "How much command line feedback to give.")
@@ -60,47 +72,47 @@ void AddPolyChord(CLI::App* app, Settings* settings) {
       "num_repeats Warning: in high dimensions PolyChord produces _a lot_ "
       "of posterior samples. You probably don't need to change this");
 
-  app->add_flag("--write-weighted-samples,!--no-weighted-samples",
-                settings->posteriors,
-                "Produce (weighted) posterior samples. Stored in <root>.txt.");
+  AddFlag(app, "--write-weighted-samples,!--no-weighted-samples",
+          settings->posteriors,
+          "Produce (weighted) posterior samples. Stored in <root>.txt.");
 
-  app->add_flag("--write-samples,!--no-samples", settings->equals,
-                "Produce (equally weighted) posterior samples. Stored in "
-                "<root>_equal_weights.txt.");
+  AddFlag(app, "--write-samples,!--no-samples", settings->equals,
+          "Produce (equally weighted) posterior samples. Stored in "
+          "<root>_equal_weights.txt.");
 
-  app->add_flag("--cluster-posteriors,!--no-cluster-posteriors",
-                settings->cluster_posteriors,
-                "Produce posterior files for each cluster? Does nothing if "
-                "do_clustering=False.");
+  AddFlag(app, "--cluster-posteriors,!--no-cluster-posteriors",
+          settings->cluster_posteriors,
+          "Produce posterior files for each cluster? Does nothing if "
+          "do_clustering=False.");
 
-  app->add_flag("--write-resume,!--no-write-resume", settings->write_resume,
-                "Create a resume file.");
+  AddFlag(app, "--write-resume,!--no-write-resume", settings->write_resume,
+          "Create a resume file.");
 
-  app->add_flag("--resume,!--overwrite", settings->read_resume,
-                "Read from resume file.");
+  AddFlag(app, "--resume,!--overwrite", settings->read_resume,
+          "Read from resume file.");
 
-  app->add_flag("--write-stats,!--no-stats", settings->write_stats,
-                "Write an evidence statistics file.");
+  AddFlag(app, "--write-stats,!--no-stats", settings->write_stats,
+          "Write an evidence statistics file.");
 
-  app->add_flag("--write-live,!--no-live", settings->write_live,
-                "Write a live points file.");
+  AddFlag(app, "--write-live,!--no-live", settings->write_live,
+          "Write a live points file.");
 
-  app->add_flag("--write-dead,!--no-dead", settings->write_dead,
-                "Write a dead points file.");
+  AddFlag(app, "--write-dead,!--no-dead", settings->write_dead,
+          "Write a dead points file.");
 
-  app->add_flag("--write-prior,!--no-prior", settings->write_prior,
-                "Write a prior points file.");
+  AddFlag(app, "--write-prior,!--no-prior", settings->write_prior,
+          "Write a prior points file.");
 
-  app->add_flag("--maximise,!--no-maximise", settings->maximise,
-                "Perform maximisation at the end of the run to find the "
-                "maximum likelihood point and value.");
+  AddFlag(app, "--maximise,!--no-maximise", settings->maximise,
+          "Perform maximisation at the end of the run to find the "
+          "maximum likelihood point and value.");
 
   app->add_option("--compression-factor", settings->compression_factor,
                   "How often to update the files and do clustering.")
       ->check(CLI::PositiveNumber);
 
-  app->add_flag(
-      "--synchronous,!--asynchronous", settings->synchronous,
+  AddFlag(
+      app, "--synchronous,!--asynchronous", settings->synchronous,
       "Parallelise with synchronous workers, rather than asynchronous ones. "
       "This can be set to False if the likelihood speed is known to be "
       "approximately constant across the parameter space. Synchronous "
