@@ -51,7 +51,7 @@ void AddPolyChord(CLI::App* app, Settings* settings) {
                   "How much command line feedback to give.")
       ->check(CLI::Range(0, 3));
 
-  app->add_option("--precision_criterion", settings->precision_criterion,
+  app->add_option("--precision-criterion", settings->precision_criterion,
                   "Termination criterion. Nested sampling terminates when the "
                   "evidence contained in the live points is "
                   "precision_criterion fraction of the total evidence.")
