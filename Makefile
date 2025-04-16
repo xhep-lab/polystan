@@ -14,6 +14,9 @@ PS_STAN_FUNCTIONS := $(abspath ./stanfunctions)
 # Include BridgeStan
 
 BS_ROOT ?= $(abspath ./bridgestan)
+STAN_NO_RANGE_CHECKS ?= 1
+STAN_CPP_OPTIMS ?= 1
+
 -include $(BS_ROOT)/Makefile
 
 # Set model-specific vars
@@ -32,12 +35,13 @@ ifeq (,$(wildcard $(PS_STAN_FILE_NAME)))
 $(warning Stan model $(PS_STAN_FILE_NAME) does not exist)
 endif
 
-# Set build flags
+# Set build flags & optimizations
 
 MPI ?= 1
 PS_STANC_FLAGS := --include-paths $(PS_STAN_FUNCTIONS) --warn-pedantic --warn-uninitialized --O1
+FFLAGS += -march=native -flto
 
-override CXXFLAGS += -I$(PS_POLYCHORD)/src/ -I$(BS_ROOT)/..
+override CXXFLAGS += -I$(PS_POLYCHORD)/src/ -I$(BS_ROOT)/.. -march=native -flto
 override STANCFLAGS += $(PS_STANC_FLAGS)
 
 ifeq ($(MPI), 1)
@@ -46,7 +50,7 @@ override CXXFLAGS += -DUSE_MPI
 override CXX = mpic++
 endif
 
-export MPI
+export MPI FFLAGS
 
 # Define real targets
 
