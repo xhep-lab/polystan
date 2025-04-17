@@ -14,6 +14,7 @@
 #include "polystan/version.hpp"
 #include "polystan/metadata.hpp"
 #include "polystan/mpi.hpp"
+#include "polystan/test.hpp"
 
 #include "bridgestan/src/bridgestan.h"
 #include "polychord/interfaces.hpp"
@@ -192,6 +193,14 @@ class Model {
     polychord.add("precision_criterion", settings.precision_criterion);
     polychord.add("seed", settings.seed);
 
+    // test
+
+    json::Object test;
+    test.add(
+        "metadata",
+        "This is a test of uniformity of insertion indexes of live points");
+    test.add("p-value", p_value());
+
     // evidence
 
     json::Object evidence_;
@@ -224,6 +233,7 @@ class Model {
     json::Object document;
     document.add("polystan", polystan);
     document.add("polychord", polychord);
+    document.add("test", test);
     document.add("evidence", evidence_);
     document.add("samples", samples_);
     document.write(json_file_name);
@@ -270,6 +280,8 @@ class Model {
   std::array<double, 2> evidence() const {
     return read::evidence(basename() + ".stats");
   }
+
+  double p_value() const { return test::insertion_index_p_value(basename()); }
 
  private:
   void fix_settings() {
