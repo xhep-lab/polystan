@@ -51,11 +51,12 @@ import json
 
 with open("bernoulli.json", "r") as f:
     data = json.load(f)
+    attrs = {"metadata": data.pop("metadata")}
 
 import arviz as az
 import matplotlib.pyplot as plt
 
-id = az.convert_to_inference_data(data["samples"]["data"])
+id = az.dict_to_dataset(data, attrs=attrs)
 
 az.plot_density(id)
 plt.show()

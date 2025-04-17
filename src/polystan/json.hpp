@@ -63,7 +63,7 @@ class Object {
   }
 
   template <typename T>
-  void add(std::vector<std::string> names, std::vector<T> data) {
+  void add(const std::vector<std::string>& names, const std::vector<T>& data) {
     for (int i = 0; i < names.size(); i++) {
       add(names[i], data[i]);
     }

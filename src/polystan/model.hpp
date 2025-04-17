@@ -211,13 +211,10 @@ class Model {
     json::Object samples_;
 
     if (settings.equals) {
+      samples_.add("metadata", "These samples are equally weighted");
       auto names_ = names();
       names_.insert(names_.begin(), "log likelihood");
-
-      samples_.add("metadata", "These samples are equally weighted");
-      json::Object data;
-      data.add(names_, samples());
-      samples_.add("data", data);
+      samples_.add(names_, samples());
     } else {
       samples_.set("did not write equally weighted points");
     }
