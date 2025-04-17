@@ -196,21 +196,25 @@ class Model {
     // test
 
     json::Object test;
-    test.add(
-        "metadata",
-        "This is a test of uniformity of insertion indexes of live points");
-    test.add("p-value", p_value());
+
+    if (settings.write_stats) {
+      test.add(
+          "metadata",
+          "This is a test of uniformity of insertion indexes of live points");
+      test.add("p-value", p_value());
+    } else {
+      test.set("did not write stats file");
+    }
 
     // evidence
 
     json::Object evidence_;
 
     if (settings.write_stats) {
-      const auto [logz, error_logz] = evidence();
-
+      const auto [logz, err] = evidence();
       evidence_.add("metadata", "The evidence is log-normally distributed");
       evidence_.add("log evidence", logz);
-      evidence_.add("error log evidence", error_logz);
+      evidence_.add("error log evidence", err);
     } else {
       evidence_.set("did not write stats file");
     }
@@ -278,10 +282,18 @@ class Model {
   }
 
   std::array<double, 2> evidence() const {
+    if (!settings.write_stats) {
+      return {std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN()};
+    }
     return read::evidence(basename() + ".stats");
   }
 
-  double p_value() const { return test::insertion_index_p_value(basename()); }
+  double p_value() const {
+    if (!settings.write_stats) {
+      return std::numeric_limits<double>::quiet_NaN();
+    }
+    return test::insertion_index_p_value(basename());
+  }
 
  private:
   void fix_settings() {

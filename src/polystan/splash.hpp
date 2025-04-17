@@ -69,8 +69,8 @@ std::string start(const Model& model, const std::string& toml_file_name) {
 
 std::string end(const std::string& json_file_name, const Model& model) {
   std::stringstream splash;
-  std::array<double, 2> evidence = model.evidence();
-  double p = model.p_value();
+  const auto p = model.p_value();
+  const auto [logz, err] = model.evidence();
 
   splash << COLOR << "\n"
          << PREFIX << "Finished PolyChord\n"
@@ -78,8 +78,7 @@ std::string end(const std::string& json_file_name, const Model& model) {
          << "*\n"
          << PREFIX << "PolyStan JSON summary at " << json_file_name << "\n"
          << PREFIX << "\n"
-         << PREFIX << "Evidence log(Z) = " << evidence[0] << " ± "
-         << evidence[1] << "\n"
+         << PREFIX << "Evidence log(Z) = " << logz << " ± " << err << "\n"
          << PREFIX << "Insertion index p-value = " << p << "\n"
          << PREFIX << "\n"
          << PREFIX << "If you use these results, you are required to cite\n"
