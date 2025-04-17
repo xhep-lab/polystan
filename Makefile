@@ -14,8 +14,10 @@ PS_STAN_FUNCTIONS := $(abspath ./stanfunctions)
 # Include BridgeStan
 
 BS_ROOT ?= $(abspath ./bridgestan)
+STANC3_VERSION = latest
 STAN_NO_RANGE_CHECKS ?= 1
 STAN_CPP_OPTIMS ?= 1
+TBB_CXXFLAGS ?= -w -Ofast -march=native -flto=auto
 
 -include $(BS_ROOT)/Makefile
 
@@ -38,10 +40,10 @@ endif
 # Set build flags & optimizations
 
 MPI ?= 1
-PS_STANC_FLAGS := --include-paths $(PS_STAN_FUNCTIONS) --warn-pedantic --warn-uninitialized --O1
-FFLAGS += -march=native -flto
+PS_STANC_FLAGS := --include-paths $(PS_STAN_FUNCTIONS) --O1
+FFLAGS += -march=native -flto=auto
 
-override CXXFLAGS += -I$(PS_POLYCHORD)/src/ -I$(BS_ROOT)/.. -march=native -flto
+override CXXFLAGS += -I$(PS_POLYCHORD)/src/ -I$(BS_ROOT)/.. -Ofast -march=native -flto=auto -Wno-deprecated-declarations
 override STANCFLAGS += $(PS_STANC_FLAGS)
 
 ifeq ($(MPI), 1)
@@ -61,27 +63,37 @@ $(BS_ROOT)/src:
 	$(error Code $(BS_ROOT) does not exist - try git submodule update --init --recursive)
 
 $(PS_POLYCHORD)/lib/libchord.so: $(PS_POLYCHORD)/src
+	$(info Building PolyChord library)
 	$(MAKE) -C $(PS_POLYCHORD)
 
 $(PS_BUILD):
 	mkdir -p $(PS_BUILD)
 
 $(PS_BUILD)/$(PS_STAN_MODEL_NAME).hpp: $(PS_STAN_FILE_NAME) $(STANC) | $(PS_BUILD)
+	$(info Transpiling model into C++)
 	$(STANC) $(STANCFLAGS) --o=$@ $(PS_STAN_FILE_NAME)
 
 $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o: $(PS_BUILD)/$(PS_STAN_MODEL_NAME).hpp
-	$(COMPILE.cpp) -w -x c++ -o $@ $<
+	$(info Compiling model)
+	$(COMPILE.cpp) -x c++ -o $@ $<
 
 $(PS_BUILD)/polystan.o: $(PS_SRC)/polystan.cpp $(PS_HEADERS) $(PS_POLYCHORD)/lib/libchord.so | $(PS_BUILD)
+	$(info Compiling PolyStan inferface)
 	$(COMPILE.cpp) -D PS_POLYCHORD_VERSION=$(PS_POLYCHORD_VERSION) -I$(PS_SRC) $< -o $@
 
 $(PS_BUILD)/$(PS_STAN_MODEL_NAME)_metadata.o: $(PS_SRC)/metadata.cpp $(PS_STAN_FILE_NAME)
+	$(info Compiling metadata)
 	$(COMPILE.cpp) -D PS_STAN_FILE_NAME=$(PS_STAN_FILE_NAME) -D PS_STAN_MODEL_NAME=$(PS_STAN_MODEL_NAME) -I$(PS_SRC) $< -o $@
 
 %: %.stan $(BS_ROOT)/src $(PS_BUILD)/polystan.o $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o $(PS_BUILD)/$(PS_STAN_MODEL_NAME)_metadata.o $(PS_POLYCHORD)/lib/libchord.so $(BRIDGE_O) $(TBB_TARGETS)
+	$(info Building executable)
 	$(LINK.cpp) -o $(PS_EXE) $(PS_BUILD)/polystan.o $(PS_BUILD)/$(PS_STAN_MODEL_NAME).o $(PS_BUILD)/$(PS_STAN_MODEL_NAME)_metadata.o $(BRIDGE_O) $(PS_POLYCHORD_LDLIBS) $(LDLIBS)
 
 # Define phony targets
+
+.PHONY: INFO
+INFO:
+	$(info Compiling BridgeStan and TBB dependencies)
 
 .PHONY: clean-polystan
 clean-polystan:

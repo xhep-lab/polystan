@@ -58,15 +58,18 @@ int main(int argc, char** argv) {
 
   Settings settings(0, 0);
 
-  // adjust some default settings
+  // adjust some default settings to minimize i/o
 
-  settings.maximise = false;
-  settings.write_live = true;
-  settings.write_dead = true;
-  settings.write_resume = true;
+  settings.write_prior = false;
+  settings.write_live = false;
+  settings.write_dead = false;
+  settings.write_resume = false;
+  settings.posteriors = false;
   settings.equals = true;
   settings.write_stats = true;
-  settings.read_resume = true;
+
+  settings.maximise = false;
+  settings.read_resume = false;
   settings.file_root = ps::stan_model_name;
 
   // add options to cli
