@@ -14,7 +14,6 @@ PS_STAN_FUNCTIONS := $(abspath ./stanfunctions)
 # Include BridgeStan
 
 BS_ROOT ?= $(abspath ./bridgestan)
-STANC3_VERSION = latest
 STAN_NO_RANGE_CHECKS ?= 1
 STAN_CPP_OPTIMS ?= 1
 TBB_CXXFLAGS ?= -w -Ofast -march=native -flto=auto
