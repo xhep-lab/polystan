@@ -283,7 +283,8 @@ class Model {
 
   std::array<double, 2> evidence() const {
     if (!settings.write_stats) {
-      return {std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN()};
+      return {std::numeric_limits<double>::quiet_NaN(),
+              std::numeric_limits<double>::quiet_NaN()};
     }
     return read::evidence(basename() + ".stats");
   }
