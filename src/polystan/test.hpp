@@ -137,7 +137,8 @@ double ess(const std::string& txt_file_name) {
   double sum_squared = 0;
 
   for (const auto& w : weight) {
-    sum_squared += 2. * w * w;  // this is an estimator; see app. A5 of 2409.18464
+    sum_squared
+        += 2. * w * w;  // this is an estimator; see app. A5 of 2409.18464
     sum += w;
   }
 
