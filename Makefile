@@ -14,9 +14,13 @@ PS_STAN_FUNCTIONS := $(abspath ./stanfunctions)
 # Include BridgeStan
 
 BS_ROOT ?= $(abspath ./bridgestan)
+
+DEBUG ?= 0
+ifeq ($(DEBUG), 0)
 STAN_NO_RANGE_CHECKS ?= 1
 STAN_CPP_OPTIMS ?= 1
 TBB_CXXFLAGS ?= -w -Ofast -march=native -flto=auto
+endif
 
 -include $(BS_ROOT)/Makefile
 
@@ -38,20 +42,24 @@ endif
 
 # Set build flags & optimizations
 
+override CXXFLAGS += -I$(PS_POLYCHORD)/src/ -I$(BS_ROOT)/.. -Wno-deprecated-declarations
+override STANCFLAGS += --include-paths $(PS_STAN_FUNCTIONS)
+
 MPI ?= 1
-PS_STANC_FLAGS := --include-paths $(PS_STAN_FUNCTIONS) --O1
-FFLAGS += -march=native -flto=auto
-
-override CXXFLAGS += -I$(PS_POLYCHORD)/src/ -I$(BS_ROOT)/.. -Ofast -march=native -flto=auto -Wno-deprecated-declarations
-override STANCFLAGS += $(PS_STANC_FLAGS)
-
 ifeq ($(MPI), 1)
 override LDLIBS += -lmpi
 override CXXFLAGS += -DUSE_MPI
 override CXX = mpic++
 endif
 
-export MPI FFLAGS
+ifeq ($(DEBUG), 1)
+override CXXFLAGS += -g
+else
+override CXXFLAGS += -Ofast -march=native -flto=auto
+FFLAGS += -march=native -flto=auto
+endif
+
+export MPI FFLAGS DEBUG
 
 # Define real targets
 

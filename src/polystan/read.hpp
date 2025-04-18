@@ -58,6 +58,29 @@ std::vector<std::vector<double>> samples(
   return data;
 }
 
+std::array<std::vector<double>, 2> death_birth(
+    const std::string& death_birth_file_name) {
+  std::ifstream ifs(death_birth_file_name);
+
+  if (!ifs) {
+    throw std::runtime_error("Could not read dead points from "
+                             + death_birth_file_name);
+  }
+
+  std::array<std::vector<double>, 2> data;
+  std::string record;
+
+  while (std::getline(ifs, record)) {
+    std::istringstream iss(record);
+    std::istream_iterator<double> iter(iss);
+    std::vector<double> row((iter), std::istream_iterator<double>());
+    data[0].push_back(row[row.size() - 2]);
+    data[1].push_back(row[row.size() - 1]);
+  }
+
+  return data;
+}
+
 std::array<double, 2> evidence(const std::string& stats_file_name) {
   const std::string prefix = "log(Z)       =";
   const std::string delim = "+/-";
@@ -77,10 +100,29 @@ std::array<double, 2> evidence(const std::string& stats_file_name) {
   const std::string data(record.substr(prefix.size()));
 
   const double logz = std::stof(data.substr(0, data.find(delim)));
-  const double error_logz
-      = std::stof(data.substr(data.find(delim) + delim.size()));
+  const double err = std::stof(data.substr(data.find(delim) + delim.size()));
 
-  return {logz, error_logz};
+  return {logz, err};
+}
+
+std::vector<double> weight(const std::string& txt_file_name) {
+  std::ifstream ifs(txt_file_name);
+
+  if (!ifs) {
+    throw std::runtime_error("Could not weights from " + txt_file_name);
+  }
+
+  std::vector<double> data;
+  std::string record;
+
+  while (std::getline(ifs, record)) {
+    std::istringstream iss(record);
+    std::istream_iterator<double> iter(iss);
+    std::vector<double> row((iter), std::istream_iterator<double>());
+    data.push_back(row[0]);
+  }
+
+  return data;
 }
 
 }  // end namespace read

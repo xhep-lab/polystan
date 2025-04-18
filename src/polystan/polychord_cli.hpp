@@ -2,6 +2,7 @@
 #define POLYSTAN_POLYCHORD_CLI_HPP_
 
 #include <iostream>
+#include <string>
 
 #include "CLI11/CLI11.hpp"
 #include "polychord/interfaces.hpp"

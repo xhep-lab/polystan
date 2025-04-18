@@ -187,23 +187,35 @@ class Model {
 
     json::Object polychord;
 
-    polychord.add("polychord version", polychord_version);
+    polychord.add("version", polychord_version);
     polychord.add("nlive", settings.nlive);
     polychord.add("num_repeats", settings.num_repeats);
     polychord.add("precision_criterion", settings.precision_criterion);
     polychord.add("seed", settings.seed);
 
+    // effective sample size
+
+    json::Object ess_;
+
+    if (settings.posteriors) {
+      ess_.add("metadata", "Kish estimate of effective sample size");
+      ess_.add("n", ess());
+    } else {
+      ess_.set("did not write weighted samples file");
+    }
+
     // test
 
     json::Object test;
 
-    if (settings.write_stats) {
+    if (settings.write_dead) {
       test.add(
           "metadata",
           "This is a test of uniformity of insertion indexes of live points");
       test.add("p-value", p_value());
+      test.add("batch size / n_live", batch);
     } else {
-      test.set("did not write stats file");
+      test.set("did not write dead points file");
     }
 
     // evidence
@@ -238,6 +250,7 @@ class Model {
     document.add("polystan", polystan);
     document.add("polychord", polychord);
     document.add("test", test);
+    document.add("ess", ess_);
     document.add("evidence", evidence_);
     document.add("samples", samples_);
     document.write(json_file_name);
@@ -290,10 +303,18 @@ class Model {
   }
 
   double p_value() const {
-    if (!settings.write_stats) {
+    if (!settings.write_dead) {
       return std::numeric_limits<double>::quiet_NaN();
     }
-    return test::insertion_index_p_value(basename());
+    return test::insertion_index_p_value(basename() + "_dead-birth.txt",
+                                         settings.nlive, batch);
+  }
+
+  double ess() const {
+    if (!settings.posteriors) {
+      return std::numeric_limits<double>::quiet_NaN();
+    }
+    return test::ess(basename() + ".txt");
   }
 
  private:
@@ -317,6 +338,7 @@ class Model {
   bs_rng* rng;
   Settings settings;
   unsigned int seed;
+  int batch = 1;
 };
 
 }  // end namespace polystan

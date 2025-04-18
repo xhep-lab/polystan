@@ -62,9 +62,9 @@ int main(int argc, char** argv) {
 
   settings.write_prior = false;
   settings.write_live = false;
-  settings.write_dead = false;
   settings.write_resume = false;
-  settings.posteriors = false;
+  settings.write_dead = true;
+  settings.posteriors = true;
   settings.equals = true;
   settings.write_stats = true;
 
@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
   random->add_option("--seed", seed, "Random seed")
       ->check(CLI::NonNegativeNumber);
 
-  CLI::App* output = app.add_subcommand("output", "Control Stan output");
+  CLI::App* output = app.add_subcommand("output", "Control PolyStan output");
   std::string json_file_name = std::filesystem::weakly_canonical(
       std::string(ps::stan_model_name) + ".json");
   output->add_option("--json-file", json_file_name, "JSON file output name")
@@ -141,8 +141,6 @@ int main(int argc, char** argv) {
   ps::mpi::barrier();
 
   model.run();
-
-  // write results to disk in json format
 
   if (ps::mpi::is_rank_zero()) {
     model.write(json_file_name, toml_file_name);

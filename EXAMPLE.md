@@ -49,14 +49,17 @@ For plotting, we can read the samples in the json file. Plot e.g., with arviz,
 ```python
 import json
 
-with open("bernoulli.json", "r") as f:
-    data = json.load(f)
-    attrs = {"metadata": data.pop("metadata")}
-
 import arviz as az
 import matplotlib.pyplot as plt
 
-id = az.dict_to_dataset(data, attrs=attrs)
+def load(file_name):
+    with open(file_name, "r") as f:
+        data = json.load(f)
+    samples = data["samples"]
+    attrs = {"metadata": samples.pop("metadata"), "inference_library_version": data["polychord"]["version"], "inference_library": "polychord"}
+    return az.dict_to_dataset(samples, attrs=attrs)
+
+id = load(file_name)
 
 az.plot_density(id)
 plt.show()

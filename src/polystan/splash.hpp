@@ -69,7 +69,8 @@ std::string start(const Model& model, const std::string& toml_file_name) {
 
 std::string end(const std::string& json_file_name, const Model& model) {
   std::stringstream splash;
-  const auto p = model.p_value();
+  const double p_value = model.p_value();
+  const double ess = model.ess();
   const auto [logz, err] = model.evidence();
 
   splash << COLOR << "\n"
@@ -79,7 +80,9 @@ std::string end(const std::string& json_file_name, const Model& model) {
          << PREFIX << "PolyStan JSON summary at " << json_file_name << "\n"
          << PREFIX << "\n"
          << PREFIX << "Evidence log(Z) = " << logz << " ± " << err << "\n"
-         << PREFIX << "Insertion index p-value = " << p << "\n"
+         << PREFIX << "P-value of sampling from constrained prior = " << p_value
+         << "\n"
+         << PREFIX << "Effective number of samples = " << ess << "\n"
          << PREFIX << "\n"
          << PREFIX << "If you use these results, you are required to cite\n"
          << PREFIX << "https://arxiv.org/abs/1502.01856\n"
