@@ -3,6 +3,7 @@
 
 #include <filesystem>
 #include <limits>
+#include <optional>
 #include <regex>
 #include <string>
 #include <utility>
@@ -195,24 +196,26 @@ class Model {
 
     // effective sample size
 
-    json::Object ess_;
+    json::Object ess_entry;
+    const auto ess_ = ess();
 
-    if (settings.posteriors) {
-      ess_.add("metadata", "Kish estimate of effective sample size");
-      ess_.add("n", ess());
+    if (ess_.has_value()) {
+      ess_entry.add("metadata", "Kish estimate of effective sample size");
+      ess_entry.add("n", ess_.value());
     } else {
-      ess_.set("did not write weighted samples file");
+      ess_entry.set("did not write weighted samples file");
     }
 
     // test
 
     json::Object test;
+    const auto p_value_ = p_value();
 
-    if (settings.write_dead) {
+    if (p_value_.has_value()) {
       test.add(
           "metadata",
           "This is a test of uniformity of insertion indexes of live points");
-      test.add("p-value", p_value());
+      test.add("p-value", p_value_.value());
       test.add("batch size / n_live", batch);
     } else {
       test.set("did not write dead points file");
@@ -220,28 +223,31 @@ class Model {
 
     // evidence
 
-    json::Object evidence_;
+    json::Object evidence_entry;
+    const auto evidence_ = evidence();
 
-    if (settings.write_stats) {
-      const auto [logz, err] = evidence();
-      evidence_.add("metadata", "The evidence is log-normally distributed");
-      evidence_.add("log evidence", logz);
-      evidence_.add("error log evidence", err);
+    if (evidence_.has_value()) {
+      const auto [logz, err] = evidence_.value();
+      evidence_entry.add("metadata",
+                         "The evidence is log-normally distributed");
+      evidence_entry.add("log evidence", logz);
+      evidence_entry.add("error log evidence", err);
     } else {
-      evidence_.set("did not write stats file");
+      evidence_entry.set("did not write stats file");
     }
 
     // samples
 
-    json::Object samples_;
+    json::Object samples_entry;
+    const auto samples_ = samples();
 
-    if (settings.equals) {
-      samples_.add("metadata", "These samples are equally weighted");
+    if (samples_.has_value()) {
+      samples_entry.add("metadata", "These samples are equally weighted");
       auto names_ = names();
       names_.insert(names_.begin(), "log likelihood");
-      samples_.add(names_, samples());
+      samples_entry.add(names_, samples_.value());
     } else {
-      samples_.set("did not write equally weighted points");
+      samples_entry.set("did not write equally weighted points");
     }
 
     // write to disk
@@ -250,9 +256,9 @@ class Model {
     document.add("polystan", polystan);
     document.add("polychord", polychord);
     document.add("test", test);
-    document.add("ess", ess_);
-    document.add("evidence", evidence_);
-    document.add("samples", samples_);
+    document.add("ess", ess_entry);
+    document.add("evidence", evidence_entry);
+    document.add("samples", samples_entry);
     document.write(json_file_name);
   }
 
@@ -290,29 +296,31 @@ class Model {
            / settings.file_root;
   }
 
-  std::vector<std::vector<double>> samples() const {
+  std::optional<std::vector<std::vector<double>>> samples() const {
+    if (!settings.equals) {
+      return std::nullopt;
+    }
     return read::samples(basename() + "_equal_weights.txt");
   }
 
-  std::array<double, 2> evidence() const {
+  std::optional<std::array<double, 2>> evidence() const {
     if (!settings.write_stats) {
-      return {std::numeric_limits<double>::quiet_NaN(),
-              std::numeric_limits<double>::quiet_NaN()};
+      return std::nullopt;
     }
     return read::evidence(basename() + ".stats");
   }
 
-  double p_value() const {
+  std::optional<double> p_value() const {
     if (!settings.write_dead) {
-      return std::numeric_limits<double>::quiet_NaN();
+      return std::nullopt;
     }
     return test::insertion_index_p_value(basename() + "_dead-birth.txt",
                                          settings.nlive, batch);
   }
 
-  double ess() const {
+  std::optional<double> ess() const {
     if (!settings.posteriors) {
-      return std::numeric_limits<double>::quiet_NaN();
+      return std::nullopt;
     }
     return test::ess(basename() + ".txt");
   }

@@ -69,21 +69,36 @@ std::string start(const Model& model, const std::string& toml_file_name) {
 
 std::string end(const std::string& json_file_name, const Model& model) {
   std::stringstream splash;
-  const double p_value = model.p_value();
-  const double ess = model.ess();
-  const auto [logz, err] = model.evidence();
+  const auto p_value = model.p_value();
+  const auto ess = model.ess();
+  const auto evidence = model.evidence();
 
   splash << COLOR << "\n"
          << PREFIX << "Finished PolyChord\n"
          << PREFIX << "Native PolyChord results at " << model.basename()
          << "*\n"
-         << PREFIX << "PolyStan JSON summary at " << json_file_name << "\n"
-         << PREFIX << "\n"
-         << PREFIX << "Evidence log(Z) = " << logz << " ± " << err << "\n"
-         << PREFIX << "P-value of sampling from constrained prior = " << p_value
-         << "\n"
-         << PREFIX << "Effective number of samples = " << ess << "\n"
-         << PREFIX << "\n"
+         << PREFIX << "PolyStan JSON summary at " << json_file_name << "\n";
+
+  if (evidence.has_value() || p_value.has_value() || ess.has_value()) {
+    splash << PREFIX << "\n";
+  }
+
+  if (evidence.has_value()) {
+    const auto [logz, err] = evidence.value();
+    splash << PREFIX << "Evidence log(Z) = " << logz << " ± " << err << "\n";
+  }
+
+  if (p_value.has_value()) {
+    splash << PREFIX
+           << "P-value of sampling from constrained prior = " << p_value.value()
+           << "\n";
+  }
+
+  if (ess.has_value()) {
+    splash << PREFIX << "Effective number of samples = " << ess.value() << "\n";
+  }
+
+  splash << PREFIX << "\n"
          << PREFIX << "If you use these results, you are required to cite\n"
          << PREFIX << "https://arxiv.org/abs/1502.01856\n"
          << PREFIX << "https://arxiv.org/abs/1506.00171\n"
