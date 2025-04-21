@@ -1,6 +1,7 @@
 #ifndef POLYSTAN_MODEL_HPP_
 #define POLYSTAN_MODEL_HPP_
 
+#include <ctime>
 #include <filesystem>
 #include <limits>
 #include <optional>
@@ -177,7 +178,6 @@ class Model {
 
     json::Object polystan;
 
-    polystan.add("polystan version", version);
     polystan.add("stan file name", stan_file_name);
     polystan.add("stan data file", data_file_name);
     polystan.add("polystan toml file", toml_file_name);
@@ -188,11 +188,28 @@ class Model {
 
     json::Object polychord;
 
-    polychord.add("version", polychord_version);
     polychord.add("nlive", settings.nlive);
     polychord.add("num_repeats", settings.num_repeats);
     polychord.add("precision_criterion", settings.precision_criterion);
     polychord.add("seed", settings.seed);
+
+    // metadata format
+
+    json::Object metadata;
+
+    std::time_t raw = std::time(nullptr);
+    std::string now(std::ctime(&raw));
+    now.erase(std::remove(now.begin(), now.end(), '\n'), now.cend());
+
+    metadata.add("name", name());
+    metadata.add("created_at", now);
+    metadata.add("inference_library", "PolyChord");
+    metadata.add("inference_library_version", polychord_version);
+    metadata.add("creation_library", "PolyStan");
+    metadata.add("creation_library_version", version);
+    metadata.add("creation_library_language", "C++");
+    metadata.add("polystan", polystan);
+    metadata.add("polychord", polychord);
 
     // effective sample size
 
@@ -236,29 +253,45 @@ class Model {
       evidence_entry.set("did not write stats file");
     }
 
+    // add samples stats data
+
+    json::Object sample_stats;
+    sample_stats.add("test", test);
+    sample_stats.add("ess", ess_entry);
+    sample_stats.add("evidence", evidence_entry);
+
     // samples
 
-    json::Object samples_entry;
-    const auto samples_ = samples();
+    auto names_ = names();
+    names_.insert(names_.begin(), "log-likelihood");
 
-    if (samples_.has_value()) {
-      samples_entry.add("metadata", "These samples are equally weighted");
-      auto names_ = names();
-      names_.insert(names_.begin(), "log likelihood");
-      samples_entry.add(names_, samples_.value());
+    json::Object posterior_entry;
+    const auto posterior_samples_ = posterior_samples();
+
+    if (posterior_samples_.has_value()) {
+      posterior_entry.add(names_, posterior_samples_.value());
     } else {
-      samples_entry.set("did not write equally weighted points");
+      posterior_entry.set("did not write equally weighted points");
+    }
+
+    json::Object prior_entry;
+    const auto prior_samples_ = prior_samples();
+
+    if (prior_samples_.has_value()) {
+      prior_entry.add(names_, prior_samples_.value());
+    } else {
+      prior_entry.set("did not write equally weighted points");
     }
 
     // write to disk
 
     json::Object document;
-    document.add("polystan", polystan);
-    document.add("polychord", polychord);
-    document.add("test", test);
-    document.add("ess", ess_entry);
-    document.add("evidence", evidence_entry);
-    document.add("samples", samples_entry);
+    document.add("posterior_attrs", metadata);
+    document.add("prior_attrs", metadata);
+    document.add("sample_stats_attrs", metadata);
+    document.add("sample_stats", sample_stats);
+    document.add("posterior", posterior_entry);
+    document.add("prior", prior_entry);
     document.write(json_file_name);
   }
 
@@ -291,16 +324,25 @@ class Model {
     return bs_param_num(model, true, true) - bs_param_num(model, false, false);
   }
 
+  std::string name() const { return bs_name(model); }
+
   std::string basename() const {
     return std::filesystem::weakly_canonical(settings.base_dir)
            / settings.file_root;
   }
 
-  std::optional<std::vector<std::vector<double>>> samples() const {
+  std::optional<std::vector<std::vector<double>>> posterior_samples() const {
     if (!settings.equals) {
       return std::nullopt;
     }
     return read::samples(basename() + "_equal_weights.txt");
+  }
+
+  std::optional<std::vector<std::vector<double>>> prior_samples() const {
+    if (!settings.write_prior) {
+      return std::nullopt;
+    }
+    return read::samples(basename() + "_prior.txt");
   }
 
   std::optional<std::array<double, 2>> evidence() const {

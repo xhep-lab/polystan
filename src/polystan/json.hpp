@@ -69,8 +69,10 @@ class Object {
     }
   }
 
-  void add(const std::string& name, Object& child) {
-    value.AddMember(String(name, alloc).Move(), child.value.Move(), alloc);
+  void add(const std::string& name, const Object& child) {
+    rj::Value copy;
+    copy.CopyFrom(child.value, alloc);
+    value.AddMember(String(name, alloc).Move(), copy.Move(), alloc);
   }
 
   template <typename T>
