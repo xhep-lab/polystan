@@ -47,19 +47,10 @@ shows us the evidence estimate and error.
 
 For plotting, we can read the samples in the json file. Plot e.g., with arviz,
 ```python
-import json
-
 import arviz as az
 import matplotlib.pyplot as plt
 
-def load(file_name):
-    with open(file_name, "r") as f:
-        data = json.load(f)
-    samples = data["samples"]
-    attrs = {"metadata": samples.pop("metadata"), "inference_library_version": data["polychord"]["version"], "inference_library": "polychord"}
-    return az.dict_to_dataset(samples, attrs=attrs)
-
-id = load(file_name)
+id = az.from_json('bernoulli.json')
 
 az.plot_density(id)
 plt.show()
