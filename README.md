@@ -19,10 +19,10 @@ sudo dnf install git make gcc gfortran openmpi-devel && module load mpi/openmpi-
 
 You need to clone recursively to obtain PolyChord and Stan code
 ```bash
-git clone --recursive https://github.com/andrewfowlie/polystan  # fresh clone
+git clone --recursive https://github.com/xhep-lab/polystan  # fresh clone
 git submodule update --init --recursive  # update an existing clone
 ```
-Lastly, build and run a model, e.g.,
+Lastly, you can build and run a model, e.g.,
 ```bash
 make examples/bernoulli  # builds everything required for this model
 ./examples/bernoulli data --file examples/bernoulli.data.json  # runs model
@@ -39,8 +39,16 @@ For further runtime options, see
 ./examples/bernoulli polychord --help  # polychord options
 ```
 
-For a complete workflow, including plotting, see [EXAMPLE.md](EXAMPLE.md).
+## Outputs
 
+The log evidence and error are printed to the screen, and saved to disk alongside other outputs.
+
+PolyChord's native CSV outputs are explained in the [here](https://github.com/PolyChord/PolyChordLite/tree/master?tab=readme-ov-file#output-files). In addition to those, PolyStan organizes outputs into a JSON file that follows the [arViz InferenceData schema](https://python.arviz.org/en/latest/schema/schema.html). This can be easily read and used by other programs, e.g.,
+```python
+import arviz as az
+data = az.from_json('bernoulli.json')
+```
+For a complete workflow, including plotting, see [EXAMPLE.md](EXAMPLE.md).
 
 ## Supported Stan models
 
