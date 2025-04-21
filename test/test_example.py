@@ -54,7 +54,7 @@ def read_evidence(example):
     result_name = os.path.join(EXAMPLE, f"{example}.json")
     with open(result_name, "r", encoding="utf-8") as result_file:
         result = json.load(result_file)
-    return result["evidence"]["log evidence"]
+    return result["sample_stats"]["evidence"]["log evidence"]
 
 
 @pytest.mark.parametrize("example", EXAMPLES)
