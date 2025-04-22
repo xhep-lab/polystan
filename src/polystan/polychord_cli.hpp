@@ -19,7 +19,7 @@ void AddFlag(CLI::App* app, std::string flag, bool& var, std::string help) {
   app->add_flag(flag, var, help)->default_val(var)->default_str(bool2str(var));
 }
 
-void AddPolyChord(CLI::App* app, Settings* settings) {
+void AddPolyChord(CLI::App* app, Settings* settings, bool& no_derived) {
   app->add_option("--nlive", settings->nlive,
                   "The number of live points. Increasing nlive increases the "
                   "accuracy of posteriors and evidences, and proportionally "
@@ -149,6 +149,32 @@ void AddPolyChord(CLI::App* app, Settings* settings) {
                   "Choose the seed to seed the random number generator. Note "
                   "**Positive seeds only** a negative seed indicates that you "
                   "should use the system time in milliseconds.");
+
+  // add option for no i/o
+
+  auto no_write_group = app->add_option_group("no-write");
+  no_write_group->add_flag("--no-write", "Do not write any files to disk");
+  no_write_group->preparse_callback([settings](int) {
+    settings->write_prior = false;
+    settings->write_live = false;
+    settings->write_resume = false;
+    settings->write_dead = false;
+    settings->posteriors = false;
+    settings->equals = false;
+    settings->write_stats = false;
+  });
+
+  // add option for derived parameters
+
+  app->add_flag(
+      "--no-derived", no_derived,
+      "Do not include derived parameters in outputs written to disk.");
+
+  // add option for zero feedback
+
+  app->add_flag(
+      "--no-feedback", [settings](int) { settings->feedback = 0; },
+      "Minimal command line feedback");
 }
 
 }  // end namespace polystan

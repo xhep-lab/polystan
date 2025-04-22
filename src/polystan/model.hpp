@@ -23,12 +23,13 @@
 
 namespace polystan {
 
-std::optional<std::string> unconstrain_err(bs_model* model,
-                                           std::vector<double> theta) {
-  std::vector<double> theta_unc(theta.size());
+std::optional<std::string> unconstrain_err(const bs_model* model,
+                                           const std::vector<double>& theta) {
+  double* theta_unc = new double[theta.size()];
   char* err;
   const int err_code
-      = bs_param_unconstrain(model, theta.data(), theta_unc.data(), &err);
+      = bs_param_unconstrain(model, theta.data(), theta_unc, &err);
+  delete[] theta_unc;
   return err_code == 0 ? std::nullopt
                        : std::optional<std::string>(add_to_err(err));
 }
@@ -49,7 +50,7 @@ bs_model* make_bs_model(const std::string& data_file_name, unsigned int seed) {
   return model;
 }
 
-bs_rng* make_bs_rng(bs_model* model, unsigned int seed) {
+bs_rng* make_bs_rng(const bs_model* model, unsigned int seed) {
   if (bs_param_num(model, false, true) == bs_param_num(model, false, false)) {
     return nullptr;
   }
@@ -64,15 +65,15 @@ bs_rng* make_bs_rng(bs_model* model, unsigned int seed) {
   return rng;
 }
 
-double loglike(bs_model* model, bs_rng* rng, double* theta, int ndim,
+double loglike(const bs_model* model, bs_rng* rng, double* theta, int ndim,
                double* phi, int nderived) {
   int err_code = 0;
   char* err;
 
   // compute unconstrained parameters
 
-  std::vector<double> theta_unc(ndim);
-  err_code = bs_param_unconstrain(model, theta, theta_unc.data(), &err);
+  double* theta_unc = new double[ndim];
+  err_code = bs_param_unconstrain(model, theta, theta_unc, &err);
 
   if (err_code != 0) {
     throw std::runtime_error(add_to_err(err));
@@ -80,23 +81,28 @@ double loglike(bs_model* model, bs_rng* rng, double* theta, int ndim,
 
   // constrain parameters to compute derived
 
-  std::vector<double> theta_phi(ndim + nderived);
-  err_code = bs_param_constrain(model, true, rng != nullptr, theta_unc.data(),
-                                theta_phi.data(), rng, &err);
+  if (nderived > 0) {
+    double* theta_phi = new double[ndim + nderived];
+    err_code = bs_param_constrain(model, true, rng != nullptr, theta_unc,
+                                  theta_phi, rng, &err);
 
-  if (err_code != 0) {
-    throw std::runtime_error(add_to_err(err));
-  }
+    if (err_code != 0) {
+      throw std::runtime_error(add_to_err(err));
+    }
 
-  for (int i = 0; i < nderived; i++) {
-    phi[i] = theta_phi[i + ndim];
+    for (int i = 0; i < nderived; i++) {
+      phi[i] = theta_phi[i + ndim];
+    }
+
+    delete[] theta_phi;
   }
 
   // compute density - stan works on unconstrained space
 
   double loglike;
-  err_code
-      = bs_log_density(model, false, false, theta_unc.data(), &loglike, &err);
+  err_code = bs_log_density(model, false, false, theta_unc, &loglike, &err);
+
+  delete[] theta_unc;
 
   if (err_code != 0) {
     throw std::runtime_error(add_to_err(err));
@@ -107,12 +113,14 @@ double loglike(bs_model* model, bs_rng* rng, double* theta, int ndim,
 
 class Model {
  public:
-  Model(const std::string& data_file_name, unsigned int seed, Settings settings)
+  Model(const std::string& data_file_name, unsigned int seed,
+        const Settings& settings, bool no_derived)
       : seed(seed),
+        _no_derived(no_derived),
         data_file_name(data_file_name),
         model(make_bs_model(data_file_name, seed)),
         rng(make_bs_rng(model, seed)),
-        settings(std::move(settings)) {
+        settings(settings) {
     check_unit_hypercube();
     fix_settings();
   }
@@ -121,22 +129,21 @@ class Model {
     const std::string msg
         = "\nParameters are not defined on unit hypercube; "
           "expect e.g. real<lower=0, upper=1>\n";
-
-    const std::vector<double> zeros(ndims(), 0.);
+    const int ndims_ = ndims();
+    const std::vector<double> zeros(ndims_, 0.);
     const auto zeros_err = unconstrain_err(model, zeros);
     if (zeros_err.has_value()) {
       throw std::runtime_error(zeros_err.value() + msg);
     }
 
-    for (int i = 0; i < ndims(); i++) {
-      std::vector<double> one(ndims(), 0.);
-      one[i] = 1.;
-      const auto one_err = unconstrain_err(model, one);
-      if (one_err.has_value()) {
-        throw std::runtime_error(one_err.value() + msg);
-      }
+    const std::vector<double> ones(ndims_, 1.);
+    const auto ones_err = unconstrain_err(model, ones);
+    if (ones_err.has_value()) {
+      throw std::runtime_error(ones_err.value() + msg);
+    }
 
-      std::vector<double> gt_one(ndims(), 0.5);
+    for (int i = 0; i < ndims_; i++) {
+      std::vector<double> gt_one(ndims_, 0.5);
       gt_one[i] = 1. + std::numeric_limits<double>::round_error();
       const auto gt_err = unconstrain_err(model, gt_one);
       if (!gt_err.has_value()) {
@@ -144,7 +151,7 @@ class Model {
                                  + param_names()[i] + msg);
       }
 
-      std::vector<double> lt_zero(ndims(), 0.5);
+      std::vector<double> lt_zero(ndims_, 0.5);
       lt_zero[i] = -std::numeric_limits<double>::round_error();
       const auto lt_err = unconstrain_err(model, lt_zero);
       if (!lt_err.has_value()) {
@@ -157,7 +164,7 @@ class Model {
   void run() const {
     std::filesystem::create_directory(settings.base_dir);
 
-    static bs_model* model_(model);
+    static const bs_model* model_(model);
     static bs_rng* rng_(rng);
 
     const auto this_loglike
@@ -197,7 +204,7 @@ class Model {
 
     json::Object metadata;
 
-    std::time_t raw = std::time(nullptr);
+    const std::time_t raw = std::time(nullptr);
     std::string now(std::ctime(&raw));
     now.erase(std::remove(now.begin(), now.end(), '\n'), now.cend());
 
@@ -271,7 +278,7 @@ class Model {
     if (posterior_samples_.has_value()) {
       posterior_entry.add(names_, posterior_samples_.value());
     } else {
-      posterior_entry.set("did not write equally weighted points");
+      posterior_entry.set("did not write equally weighted posterior points");
     }
 
     json::Object prior_entry;
@@ -280,14 +287,14 @@ class Model {
     if (prior_samples_.has_value()) {
       prior_entry.add(names_, prior_samples_.value());
     } else {
-      prior_entry.set("did not write equally weighted points");
+      prior_entry.set("did not write equally weighted prior points");
     }
 
     // write to disk
 
     json::Object document;
-    document.add("posterior_attrs", metadata);
-    document.add("prior_attrs", metadata);
+    document.copy("posterior_attrs", metadata);
+    document.copy("prior_attrs", metadata);
     document.add("sample_stats_attrs", metadata);
     document.add("sample_stats", sample_stats);
     document.add("posterior", posterior_entry);
@@ -321,6 +328,9 @@ class Model {
   int ndims() const { return bs_param_num(model, false, false); }
 
   int nderived() const {
+    if (no_derived()) {
+      return 0;
+    }
     return bs_param_num(model, true, true) - bs_param_num(model, false, false);
   }
 
@@ -367,6 +377,14 @@ class Model {
     return test::ess(basename() + ".txt");
   }
 
+  bool no_derived() const {
+    return _no_derived
+           || (!settings.write_prior && !settings.write_live
+               && !settings.write_resume && !settings.write_dead
+               && !settings.posteriors && !settings.equals
+               && !settings.write_stats);
+  }
+
  private:
   void fix_settings() {
     settings.nDims = ndims();
@@ -384,11 +402,12 @@ class Model {
     }
   }
 
-  bs_model* model;
+  const bs_model* model;
   bs_rng* rng;
   Settings settings;
-  unsigned int seed;
-  int batch = 1;
+  const unsigned int seed;
+  const int batch = 1;
+  const bool _no_derived;
 };
 
 }  // end namespace polystan

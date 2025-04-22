@@ -75,7 +75,8 @@ int main(int argc, char** argv) {
   // add options to cli
 
   CLI::App* pc_cli = app.add_subcommand("polychord", "PolyChord settings");
-  ps::AddPolyChord(pc_cli, &settings);
+  bool no_derived = false;
+  ps::AddPolyChord(pc_cli, &settings, no_derived);
 
   CLI::App* data = app.add_subcommand("data", "Data settings");
   std::string data_file_name;
@@ -126,7 +127,7 @@ int main(int argc, char** argv) {
   std::optional<ps::Model> optional_model;
 
   try {
-    optional_model.emplace(data_file_name, seed, settings);
+    optional_model.emplace(data_file_name, seed, settings, no_derived);
   } catch (const std::exception& ex) {
     return app.exit(
         CLI::ConstructionError(ex.what(), CLI::ExitCodes::InvalidError));
