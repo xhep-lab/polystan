@@ -30,8 +30,10 @@ std::optional<std::string> unconstrain_err(const bs_model* model,
   const int err_code
       = bs_param_unconstrain(model, theta.data(), theta_unc, &err);
   delete[] theta_unc;
-  return err_code == 0 ? std::nullopt
-                       : std::optional<std::string>(add_to_err(err));
+  if (err_code == 0) {
+    return std::nullopt;
+  }
+  return add_to_err(err);
 }
 
 bs_model* make_bs_model(const std::string& data_file_name, unsigned int seed) {
