@@ -45,7 +45,7 @@ endif
 override CXXFLAGS += -I$(PS_POLYCHORD)/src/ -I$(BS_ROOT)/.. -Wno-deprecated-declarations
 override STANCFLAGS += --include-paths $(PS_STAN_FUNCTIONS)
 
-MPI ?= 1
+MPI ?= $(shell mpirun 2> /dev/null && echo 1 || echo 0)
 ifeq ($(MPI), 1)
 override LDLIBS += -lmpi
 override CXXFLAGS += -DUSE_MPI
