@@ -71,7 +71,7 @@ $(BS_ROOT)/src:
 
 $(PS_POLYCHORD)/lib/libchord.so: $(PS_POLYCHORD)/src
 	$(info Building PolyChord library)
-	$(MAKE) -C $(PS_POLYCHORD)
+	$(MAKE) -C $(PS_POLYCHORD) MPI=$(MPI)
 
 $(PS_BUILD):
 	mkdir -p $(PS_BUILD)
