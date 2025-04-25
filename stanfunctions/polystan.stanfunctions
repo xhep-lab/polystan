@@ -6,8 +6,28 @@ vector log_prior(vector x, real a, real b) {
   return a * exp(log(b / a) * x);
 }
 
+vector std_normal_prior(vector x) {
+  return inv_Phi(x);
+}
+
+vector half_std_normal_prior(vector x) {
+  return std_normal_prior(flat_prior(x, 0.5, 1.));
+}
+
 vector normal_prior(vector x, real mu, real sigma) {
   return inv_Phi(x) * sigma + mu;
+}
+
+vector multi_normal_prior(vector x, vector mu, matrix Sigma) {
+  return multi_normal_cholesky_prior(x, mu, cholesky_decompose(Sigma));
+}
+
+vector multi_normal_cholesky_prior(vector x, vector mu, matrix L) {
+  return L * inv_Phi(x) + mu;
+}
+
+vector half_normal_prior(vector x, real mu, real sigma) {
+  return normal_prior(flat_prior(x, 0.5, 1.), mu, sigma);
 }
 
 vector log10_normal_prior(vector x, real mu, real sigma) {
@@ -16,4 +36,20 @@ vector log10_normal_prior(vector x, real mu, real sigma) {
 
 vector log_normal_prior(vector x, real mu, real sigma) {
   return exp(normal_prior(x, mu, sigma));
+}
+
+real beta_prior(real x, real alpha, real beta) {
+  return inv_inc_beta(x, alpha, beta);
+}
+
+vector exponential_prior(vector x, real lambda) {
+  return -log(1. - x) / lambda;
+}
+
+vector cauchy_prior(vector x, real loc, real gamma) {
+  return loc + gamma * tan(pi() * (x - 0.5));
+}
+
+vector half_cauchy_prior(vector x, real loc, real gamma) {
+  return cauchy_prior(flat_prior(x, 0.5, 1.), loc, gamma);
 }

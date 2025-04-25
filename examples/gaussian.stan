@@ -7,7 +7,7 @@ data {
 transformed data {
   real l = -5;
   real u = 5;
-  real norm =  N * log(u - l);
+  real norm = N * log(u - l);
 }
 parameters {
   vector<lower=0, upper=1>[N] x;
