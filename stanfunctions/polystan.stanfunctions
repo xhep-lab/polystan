@@ -30,11 +30,11 @@ vector half_normal_prior(vector x, real mu, real sigma) {
   return normal_prior(flat_prior(x, 0.5, 1.), mu, sigma);
 }
 
-vector log10_normal_prior(vector x, real mu, real sigma) {
+vector log10normal_prior(vector x, real mu, real sigma) {
   return exp(log(10.) * normal_prior(x, mu, sigma));
 }
 
-vector log_normal_prior(vector x, real mu, real sigma) {
+vector lognormal_prior(vector x, real mu, real sigma) {
   return exp(normal_prior(x, mu, sigma));
 }
 
