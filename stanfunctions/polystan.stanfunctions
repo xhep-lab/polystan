@@ -1,31 +1,36 @@
 // inverse transform sampling from $x \sim \mathcal{U}(0, 1)$
 
+real flat_prior(real x, real a, real b) {
+  // if $x \sim \mathcal{U}(0, 1)$ then $y \sim \mathcal{U}(a, b)$
+  return (b - a) * x + a;
+}
+
 vector flat_prior(vector x, real a, real b) {
   // if $x \sim \mathcal{U}(0, 1)$ then $y \sim \mathcal{U}(a, b)$
   return (b - a) * x + a;
 }
 
-vector log_prior(vector x, real a, real b) {
+real log_prior(real x, real a, real b) {
   // if $x \sim \mathcal{U}(0, 1)$ then $\log y \sim \mathcal{U}(\log a, \log b)$
   return a * exp(log(b / a) * x);
 }
 
-vector std_normal_prior(vector x) {
+real std_normal_prior(real x) {
   // if $x \sim \mathcal{U}(0, 1)$ then $y \sim \mathcal{N}(0, 1)$
   return inv_Phi(x);
 }
 
-vector half_std_normal_prior(vector x) {
+real half_std_normal_prior(real x) {
   // if $x \sim \mathcal{U}(0, 1)$ then $y \sim \mathcal{N}_{>0}(0, 1)$
   return std_normal_prior(flat_prior(x, 0.5, 1.));
 }
 
-vector normal_prior(vector x, real mu, real sigma) {
+real normal_prior(real x, real mu, real sigma) {
   // if $x \sim \mathcal{U}(0, 1)$ then $y \sim \mathcal{N}(\mu, \sigma^2)$
   return inv_Phi(x) * sigma + mu;
 }
 
-vector half_normal_prior(vector x, real mu, real sigma) {
+real half_normal_prior(real x, real mu, real sigma) {
   // if $x \sim \mathcal{U}(0, 1)$ then $y \sim \mathcal{N}_{>\mu}(\mu, \sigma^2)$
   return normal_prior(flat_prior(x, 0.5, 1.), mu, sigma);
 }
@@ -40,41 +45,32 @@ vector multi_normal_cholesky_prior(vector x, vector mu, matrix L) {
   return L * inv_Phi(x) + mu;
 }
 
-vector log10normal_prior(vector x, real mu, real sigma) {
+real log10normal_prior(real x, real mu, real sigma) {
   // if $x \sim \mathcal{U}(0, 1)$ then $\log_{10} y \sim \mathcal{N}(\mu, \sigma^2)$
   return exp(log(10.) * normal_prior(x, mu, sigma));
 }
 
-vector lognormal_prior(vector x, real mu, real sigma) {
+real lognormal_prior(real x, real mu, real sigma) {
   // if $x \sim \mathcal{U}(0, 1)$ then $\log y \sim \mathcal{N}(\mu, \sigma^2)$
   return exp(normal_prior(x, mu, sigma));
 }
 
 real beta_prior(real x, real alpha, real beta) {
   // if $x \sim \mathcal{U}(0, 1)$ then $y \sim \text{Beta}(\alpha, \beta)$
-  return inv_inc_beta(x, alpha, beta);
+  return inv_inc_beta(alpha, beta, x);
 }
 
-vector beta_prior(vector x, real alpha, real beta) {
-  // if $x \sim \mathcal{U}(0, 1)$ then $y \sim \text{Beta}(\alpha, \beta)$
-  vector[size(x)] y;
-  for (i in 1 : size(x)) {
-    y[i] = beta_prior(x[i], alpha, beta);
-  }
-  return y;
-}
-
-vector exponential_prior(vector x, real lambda) {
+real exponential_prior(real x, real lambda) {
   // if $x \sim \mathcal{U}(0, 1)$ then $y \sim \text{Exp}(\lambda)$
   return -log(1. - x) / lambda;
 }
 
-vector cauchy_prior(vector x, real x0, real gamma) {
+real cauchy_prior(real x, real x0, real gamma) {
   // if $x \sim \mathcal{U}(0, 1)$ then $y \sim \text{Cauchy}(x_0, \gamma)$
   return x0 + gamma * tan(pi() * (x - 0.5));
 }
 
-vector half_cauchy_prior(vector x, real x0, real gamma) {
+real half_cauchy_prior(real x, real x0, real gamma) {
   // if $x \sim \mathcal{U}(0, 1)$ then $y \sim \text{Cauchy}_{>x_0}(x_0, \gamma)$
   return cauchy_prior(flat_prior(x, 0.5, 1.), x0, gamma);
 }
