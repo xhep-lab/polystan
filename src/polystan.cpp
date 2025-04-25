@@ -60,9 +60,9 @@ int main(int argc, char** argv) {
 
   // adjust some default settings to minimize i/o
 
-  settings.write_prior = false;
   settings.write_live = false;
   settings.write_resume = false;
+  settings.write_prior = true;
   settings.write_dead = true;
   settings.posteriors = true;
   settings.equals = true;
