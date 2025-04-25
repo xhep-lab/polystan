@@ -229,7 +229,7 @@ class Model {
       ess_entry.add("metadata", "Kish estimate of effective sample size");
       ess_entry.add("n", ess_.value());
     } else {
-      ess_entry.set("did not write weighted samples file");
+      ess_entry.add("metadata", "Did not write weighted samples file");
     }
 
     // test
@@ -244,7 +244,7 @@ class Model {
       test.add("p-value", p_value_.value());
       test.add("batch size / n_live", batch);
     } else {
-      test.set("did not write dead points file");
+      test.add("metadata", "Did not write dead points file");
     }
 
     // evidence
@@ -259,7 +259,7 @@ class Model {
       evidence_entry.add("log evidence", logz);
       evidence_entry.add("error log evidence", err);
     } else {
-      evidence_entry.set("did not write stats file");
+      evidence_entry.add("metadata", "Did not write stats file");
     }
 
     // add samples stats data
