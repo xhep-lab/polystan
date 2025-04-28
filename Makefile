@@ -119,7 +119,11 @@ format-polystan:
 	isort *.py || $(BS_FORMAT_IGNOREABLE)
 	black *.py || $(BS_FORMAT_IGNOREABLE)
 
-format: format-polystan
+.PHONY: format-stan-files
+format-stan-files: examples/*stan stanfunctions/*.stanfunctions test/format/*.stan
+	$(foreach f, $^, $(STANC) --auto-format $(f) --o $(f) --include-paths ./stanfunctions;)
+
+format: format-polystan format-stan-files
 
 .PHONY: polystan-update
 polystan-update:
