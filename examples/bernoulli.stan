@@ -13,7 +13,7 @@ transformed parameters {
   real logit_theta = logit(theta);
 }
 model {
-  y ~ bernoulli(theta);
+  target += bernoulli_lpmf(y | theta);
 }
 generated quantities {
   int y_sim = bernoulli_rng(theta);

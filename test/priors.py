@@ -9,11 +9,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import norm, beta, expon, cauchy
 
-from test_example import make_polystan, run_cli
+from test_example import run_polystan_example
 
 
-make_polystan("priors")
-run_cli("priors")
+run_polystan_example("priors")
 data = az.from_json("priors.json")
 
 

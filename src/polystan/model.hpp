@@ -226,7 +226,7 @@ class Model {
     const auto ess_ = ess();
 
     if (ess_.has_value()) {
-      ess_entry.add("metadata", "Kish estimate of effective sample size");
+      ess_entry.add("metadata", "Estimate of effective sample size");
       ess_entry.add("n", ess_.value());
     } else {
       ess_entry.add("metadata", "Did not write weighted samples file");
@@ -262,12 +262,25 @@ class Model {
       evidence_entry.add("metadata", "Did not write stats file");
     }
 
+    // evaluations
+
+    json::Object neval_entry;
+    const auto neval_ = neval();
+
+    if (neval_.has_value()) {
+      neval_entry.add("metadata", "Total number of likelihood evaluations");
+      neval_entry.add("neval", neval_.value());
+    } else {
+      neval_entry.add("metadata", "Did not write stats file");
+    }
+
     // add samples stats data
 
     json::Object sample_stats;
     sample_stats.add("test", test);
     sample_stats.add("ess", ess_entry);
     sample_stats.add("evidence", evidence_entry);
+    sample_stats.add("neval", neval_entry);
 
     // samples
 
@@ -372,11 +385,18 @@ class Model {
                                          settings.nlive, batch);
   }
 
-  std::optional<double> ess() const {
-    if (!settings.posteriors) {
+  std::optional<int> ess() const {
+    if (!settings.write_stats) {
       return std::nullopt;
     }
-    return test::ess(basename() + ".txt");
+    return read::ess(basename() + ".stats");
+  }
+
+  std::optional<int> neval() const {
+    if (!settings.write_stats) {
+      return std::nullopt;
+    }
+    return read::neval(basename() + ".stats");
   }
 
   bool no_derived() const {

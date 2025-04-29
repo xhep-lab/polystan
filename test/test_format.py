@@ -16,7 +16,8 @@ FORMAT = os.path.join(CWD, "format")
 BUILD = os.path.join(ROOT, "build")
 
 
-ALL = [os.path.splitext(n)[0] for n in os.listdir(FORMAT) if n.endswith(".stan")]
+ALL = [os.path.splitext(n)[0]
+       for n in os.listdir(FORMAT) if n.endswith(".stan")]
 PASS = ["right"]
 FAIL = [f for f in ALL if f not in PASS]
 

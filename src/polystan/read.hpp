@@ -81,6 +81,48 @@ std::array<std::vector<double>, 2> death_birth(
   return data;
 }
 
+int neval(const std::string& stats_file_name) {
+  const std::string prefix = " nlike:";
+
+  std::ifstream ifs(stats_file_name);
+
+  if (!ifs) {
+    throw std::runtime_error("Could not read neval from " + stats_file_name);
+  }
+
+  std::string record;
+
+  while (std::getline(ifs, record)) {
+    if (record.rfind(prefix, 0) == 0) {
+      break;
+    }
+  }
+
+  const std::string data(record.substr(prefix.size()));
+  return std::stoi(data);
+}
+
+int ess(const std::string& stats_file_name) {
+  const std::string prefix = " nequals:";
+
+  std::ifstream ifs(stats_file_name);
+
+  if (!ifs) {
+    throw std::runtime_error("Could not read ESS from " + stats_file_name);
+  }
+
+  std::string record;
+
+  while (std::getline(ifs, record)) {
+    if (record.rfind(prefix, 0) == 0) {
+      break;
+    }
+  }
+
+  const std::string data(record.substr(prefix.size()));
+  return std::stoi(data);
+}
+
 std::array<double, 2> evidence(const std::string& stats_file_name) {
   const std::string prefix = "log(Z)       =";
   const std::string delim = "+/-";
@@ -93,8 +135,10 @@ std::array<double, 2> evidence(const std::string& stats_file_name) {
 
   std::string record;
 
-  while (record.rfind(prefix, 0) != 0) {
-    std::getline(ifs, record);
+  while (std::getline(ifs, record)) {
+    if (record.rfind(prefix, 0) == 0) {
+      break;
+    }
   }
 
   const std::string data(record.substr(prefix.size()));

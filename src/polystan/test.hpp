@@ -131,20 +131,6 @@ double insertion_index_p_value(const std::string& death_birth_file_name,
   return 1. - std::pow(1. - p_value, batches.size());
 }
 
-double ess(const std::string& txt_file_name) {
-  const auto weight = read::weight(txt_file_name);
-  double sum = 0.;
-  double sum_squared = 0;
-
-  for (const auto& w : weight) {
-    sum_squared
-        += 2. * w * w;  // this is an estimator; see app. A5 of 2409.18464
-    sum += w;
-  }
-
-  return sum * sum / sum_squared;
-}
-
 }  // end namespace test
 }  // end namespace polystan
 

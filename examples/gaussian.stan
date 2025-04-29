@@ -16,6 +16,6 @@ transformed parameters {
   vector[N] theta = flat_prior(x, l, u);
 }
 model {
-  theta ~ std_normal();
+  target += std_normal_lpdf(theta);
   target += norm;
 }
