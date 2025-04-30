@@ -72,7 +72,23 @@ def read_polystan_evidence(example):
     result_name = os.path.join(EXAMPLE, f"{example}.json")
     with open(result_name, "r", encoding="utf-8") as result_file:
         result = json.load(result_file)
-    return result["sample_stats"]["evidence"]
+    data = result["sample_stats"]["evidence"]
+    data["neval"] = result["sample_stats"]["neval"]
+    return data
+
+
+class parse_r:
+    @staticmethod
+    def __class_getitem__(type):
+        return lambda line: type(str(line).split("]", 1)[-1].strip(" '"))
+
+
+def read_r_evidence(result):
+    neval_line, err_line, logz_line = result.splitlines()[-3:]
+    logz = parse_r[float](logz_line)
+    err = parse_r[float](err_line)
+    neval = parse_r[int](neval_line)
+    return {"log evidence": logz, "error log evidence": err, "neval": neval}
 
 
 def run_r_example(example, data_file=None):
@@ -80,13 +96,7 @@ def run_r_example(example, data_file=None):
         data_file = find_data_file(example)
     result = subprocess.check_output(
         f"Rscript bs.R {example}", shell=True, cwd=EXAMPLE)
-    logz_line = str(result.splitlines()[-2])
-    logz = float(logz_line.split("]", 1)[-1].strip("'"))
-    err_line = str(result.splitlines()[-1])
-    err = float(err_line.split("]", 1)[-1].strip(" \"'%")) / 100.
-    neval_line = str(result.splitlines()[-3])
-    neval = int(neval_line.split("]", 1)[-1].strip("'"))
-    return {"log evidence": logz, "error log evidence": err, "neval": neval}
+    return read_r_evidence(result)
 
 
 @pytest.mark.parametrize("example", EXAMPLES)

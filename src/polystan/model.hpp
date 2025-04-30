@@ -166,6 +166,11 @@ class Model {
   void run() const {
     std::filesystem::create_directory(settings.base_dir);
 
+    if (settings.do_clustering) {
+      std::filesystem::create_directory(std::filesystem::path(settings.base_dir)
+                                        / "clusters");
+    }
+
     static const bs_model* model_(model);
     static bs_rng* rng_(rng);
 
