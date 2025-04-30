@@ -84,7 +84,7 @@ class parse_r:
 
 
 def read_r_evidence(result):
-    neval_line, err_line, logz_line = result.splitlines()[-3:]
+    neval_line, logz_line, err_line = result.splitlines()[-3:]
     logz = parse_r[float](logz_line)
     err = parse_r[float](err_line)
     neval = parse_r[int](neval_line)
