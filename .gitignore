@@ -34,3 +34,13 @@
 # Build
 build/
 *__pycache__
+
+# Output files
+*.toml
+*.pdf
+chains
+*.rds
+examples/*.stanfunctions
+examples/.Rhistory
+examples/.RData
+*.csv
