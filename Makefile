@@ -98,10 +98,6 @@ $(PS_BUILD)/$(PS_STAN_MODEL_NAME)_metadata.o: $(PS_SRC)/metadata.cpp $(PS_STAN_F
 
 # Define phony targets
 
-.PHONY: INFO
-INFO:
-	$(info Compiling BridgeStan and TBB dependencies)
-
 .PHONY: clean-polystan
 clean-polystan:
 	$(RM) $(PS_BUILD)/*.o
