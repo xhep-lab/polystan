@@ -14,12 +14,12 @@ make examples/bernoulli  # builds everything required for this model
 ./examples/bernoulli data --file examples/bernoulli.data.json  # runs model
 ```
 
-This produces data from polystan
+This produces data from PolyStan
 ```
 bernoulli.json
 bernoulli.toml
 ```
-and inside the chains folder data from polychord
+and inside the chains folder data from PolyChord
 ```
 bernoulli.prior_info
 bernoulli.resume
@@ -45,13 +45,9 @@ cat chains/bernoulli.stats
 ```
 shows us the evidence estimate and error.
 
-For plotting, we can read the samples in the json file. Plot e.g., with arviz,
+For plotting, we can read the samples in the JSON file. Plot e.g., with [arViz](https://www.arviz.org)
 ```python
 import arviz as az
-import matplotlib.pyplot as plt
-
 id = az.from_json('bernoulli.json')
-
-az.plot_density(id)
-plt.show()
+az.plot_density(id, show=True)
 ```

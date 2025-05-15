@@ -83,3 +83,55 @@ transformed parameters {
 }
 ```
 Here we used transformation functions from `polystan.stanfunctions` to transform from the unit hypercube to parameters with a flat distribution, a normal distribution and a log-normal distribution.
+
+## License and citations
+
+If you use PolyStan, you must agree to the PolyChord [LICENSE](https://github.com/PolyChord/PolyChordLite/blob/master/LICENCE) and cite `\cite{Handley:2015fda,Handley:2015vkr,Roualdes2023,MCStan}`
+
+```bibtex
+@article{Handley:2015fda,
+    title = "{PolyChord: nested sampling for cosmology}",
+    author = "Handley, W. J. and Hobson, M. P. and Lasenby, A. N.",
+    year = "2015",
+    journal = "Mon. Not. Roy. Astron. Soc.",
+    volume = "450",
+    number = "1",
+    pages = "L61--L65",
+    doi = "10.1093/mnrasl/slv047",
+    eprint = "1502.01856",
+    archiveprefix = "arXiv",
+    primaryclass = "astro-ph.CO"
+}
+@article{Handley:2015vkr,
+    title = "{polychord: next-generation nested sampling}",
+    author = "Handley, W. J. and Hobson, M. P. and Lasenby, A. N.",
+    year = "2015",
+    journal = "Mon. Not. Roy. Astron. Soc.",
+    volume = "453",
+    number = "4",
+    pages = "4385--4399",
+    doi = "10.1093/mnras/stv1911",
+    eprint = "1506.00171",
+    archiveprefix = "arXiv",
+    primaryclass = "astro-ph.IM"
+}
+@article{Roualdes2023,
+    title = {BridgeStan: Efficient in-memory access to the methods of a Stan model},
+    author = {Roualdes, Edward A. and Ward, Brian and Carpenter, Bob and Seyboldt, Adrian and Axen, Seth D.},
+    year = {2023},
+    month = jul,
+    journal = {J. Open Source Softw.},
+    publisher = {The Open Journal},
+    volume = {8},
+    number = {87},
+    pages = {5236},
+    doi = {10.21105/joss.05236},
+    issn = {2475-9066}
+}
+@misc{MCStan,
+    title = {Stan Modeling Language User's Guide and Reference Manual},
+    author = {Stan Development Team},
+    year = 2025,
+    url = {https://mc-stan.org}
+}
+```
