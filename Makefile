@@ -113,17 +113,19 @@ clean-polychord:
 
 clean: clean-polystan clean-polychord
 
-.PHONY: format-polystan
-format-polystan:
+.PHONY: format-cxx-files
+format-cxx-files:
 	clang-format -i src/*.cpp src/polystan/*.hpp || $(BS_FORMAT_IGNOREABLE)
-	isort *.py || $(BS_FORMAT_IGNOREABLE)
-	black *.py || $(BS_FORMAT_IGNOREABLE)
+
+.PHONY: format-python-files
+format-python-files: test/*.py contrib/*.py
+	$(foreach f, $^, isort $f; black $f;)
 
 .PHONY: format-stan-files
 format-stan-files: examples/*stan stanfunctions/*.stanfunctions test/format/*.stan
 	$(foreach f, $^, $(STANC) --auto-format $(f) --o $(f) --include-paths ./stanfunctions;)
 
-format: format-polystan format-stan-files
+format: format-cxx-files format-python-files format-stan-files
 
 .PHONY: polystan-update
 polystan-update:

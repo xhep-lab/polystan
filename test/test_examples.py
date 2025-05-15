@@ -3,21 +3,18 @@ Python wrapper around calls for tests
 =====================================
 """
 
-import os
 import json
+import os
 import subprocess
 
 import pytest
-
 
 CWD = os.path.dirname(os.path.realpath(__file__))
 ROOT = os.path.normpath(os.path.join(CWD, ".."))
 
 EXAMPLE = os.path.join(ROOT, "examples")
-BUILD = os.path.join(ROOT, "build")
 
-EXAMPLES = [os.path.splitext(n)[0]
-            for n in os.listdir(EXAMPLE) if n.endswith(".stan")]
+EXAMPLES = [os.path.splitext(n)[0] for n in os.listdir(EXAMPLE) if n.endswith(".stan")]
 
 EXPECTED_FILE_NAME = os.path.join(CWD, "expected_logz_examples.json")
 with open(EXPECTED_FILE_NAME, "r", encoding="utf-8") as expected_file:
@@ -50,8 +47,7 @@ def run_polystan_example(example, data_file=None, **kwargs):
 
     make_polystan(example)
 
-    args = {"random": {"seed": SEED}, "polychord": {
-        "seed": SEED, "overwrite": 1}}
+    args = {"random": {"seed": SEED}, "polychord": {"seed": SEED, "overwrite": 1}}
 
     for k, v in kwargs.items():
         args[k].update(v)
@@ -62,8 +58,7 @@ def run_polystan_example(example, data_file=None, **kwargs):
     if data_file is not None:
         args["data"] = {"file": data_file}
 
-    subprocess.check_call(
-        f"./{example} {cli_args(**args)}", shell=True, cwd=EXAMPLE)
+    subprocess.check_call(f"./{example} {cli_args(**args)}", shell=True, cwd=EXAMPLE)
 
     return read_polystan_evidence(example)
 

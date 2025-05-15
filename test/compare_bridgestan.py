@@ -5,7 +5,7 @@ Compare bridgesampling and polystan
 
 import subprocess
 
-from test_example import run_polystan_example, find_data_file, EXAMPLES, EXAMPLE
+from test_example import EXAMPLE, EXAMPLES, find_data_file, run_polystan_example
 
 
 class parse_r:
@@ -25,8 +25,7 @@ def read_r_evidence(result):
 def run_r_example(example, data_file=None):
     if data_file is None:
         data_file = find_data_file(example)
-    result = subprocess.check_output(
-        f"Rscript bs.R {example}", shell=True, cwd=EXAMPLE)
+    result = subprocess.check_output(f"Rscript bs.R {example}", shell=True, cwd=EXAMPLE)
     return read_r_evidence(result)
 
 
