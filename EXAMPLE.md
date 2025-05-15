@@ -45,7 +45,7 @@ cat chains/bernoulli.stats
 ```
 shows us the evidence estimate and error.
 
-For plotting, we can read the samples in the JSON file. Plot e.g., with [arViz](https://www.arviz.org)
+For plotting, we can read the samples in the JSON file. Plot e.g., with [ArviZ](https://www.arviz.org)
 ```python
 import arviz as az
 id = az.from_json('bernoulli.json')
