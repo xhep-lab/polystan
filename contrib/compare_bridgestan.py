@@ -5,7 +5,7 @@ Compare bridgesampling and polystan
 
 import subprocess
 
-from test_example import EXAMPLE, EXAMPLES, find_data_file, run_polystan_example
+from test_examples import EXAMPLE, EXAMPLES, find_data_file, run_polystan_example
 
 
 class parse_r:
