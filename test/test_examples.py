@@ -19,7 +19,7 @@ BUILD = os.path.join(ROOT, "build")
 EXAMPLES = [os.path.splitext(n)[0]
             for n in os.listdir(EXAMPLE) if n.endswith(".stan")]
 
-EXPECTED_FILE_NAME = os.path.join(CWD, "expected.json")
+EXPECTED_FILE_NAME = os.path.join(CWD, "expected_logz_examples.json")
 with open(EXPECTED_FILE_NAME, "r", encoding="utf-8") as expected_file:
     EXPECTED = json.load(expected_file)
 
