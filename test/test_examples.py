@@ -79,7 +79,8 @@ def run_polystan_example(example, data_file=None, seed=None, **kwargs):
 
 
 def read_polystan_evidence(example):
-    result_name = f"{example}.json"
+    name = os.path.split(example)[1]
+    result_name = f"{name}.json"
     with open(result_name, "r", encoding="utf-8") as result_file:
         result = json.load(result_file)
     data = result["sample_stats"]["evidence"]

@@ -13,6 +13,7 @@ CWD = os.path.dirname(os.path.realpath(__file__))
 SCRIPT = os.path.join(CWD, "bs.R")
 HEADERS = os.path.normpath(os.path.join(CWD, "..", "stanfunctions"))
 
+
 class parse_r:
     @staticmethod
     def __class_getitem__(type):
@@ -30,7 +31,9 @@ def read_r_evidence(result):
 def run_r_example(example, data_file=None):
     if data_file is None:
         data_file = find_data_file(example)
-    result = subprocess.check_output(f"Rscript {SCRIPT} {example}", shell=True, cwd=HEADERS)
+    result = subprocess.check_output(
+        f"Rscript {SCRIPT} {example}", shell=True, cwd=HEADERS
+    )
     return read_r_evidence(result)
 
 
@@ -54,4 +57,4 @@ if __name__ == "__main__":
         results[example] = [ps, bs]
 
     with open("compare_bridgestan.json", "w") as f:
-        json.dump(results, f)
+        json.dump(results, f, indent=4)
