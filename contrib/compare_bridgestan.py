@@ -3,10 +3,15 @@ Compare bridgesampling and polystan
 ===================================
 """
 
+import json
+import os
 import subprocess
 
-from test_examples import EXAMPLE, EXAMPLES, find_data_file, run_polystan_example
+from test_examples import EXAMPLES, find_data_file, run_polystan_example
 
+CWD = os.path.dirname(os.path.realpath(__file__))
+SCRIPT = os.path.join(CWD, "bs.R")
+HEADERS = os.path.normpath(os.path.join(CWD, "..", "stanfunctions"))
 
 class parse_r:
     @staticmethod
@@ -25,7 +30,7 @@ def read_r_evidence(result):
 def run_r_example(example, data_file=None):
     if data_file is None:
         data_file = find_data_file(example)
-    result = subprocess.check_output(f"Rscript bs.R {example}", shell=True, cwd=EXAMPLE)
+    result = subprocess.check_output(f"Rscript {SCRIPT} {example}", shell=True, cwd=HEADERS)
     return read_r_evidence(result)
 
 
@@ -38,8 +43,15 @@ def run_ps_bs(example):
 
 if __name__ == "__main__":
 
+    results = {}
+
     for example in EXAMPLES:
         ps, bs = run_ps_bs(example)
         print(f"# example: {example}")
         print(f"polystan: {ps}")
         print(f"bridgesampling: {bs}")
+
+        results[example] = [ps, bs]
+
+    with open("compare_bridgestan.json", "w") as f:
+        json.dump(results, f)

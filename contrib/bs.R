@@ -8,14 +8,12 @@ library("bridgesampling")
 library("rstan")
 library("jsonlite")
 
-headers <- list.files("../stanfunctions", "*.stanfunctions")
-file.copy(headers, ".")
 set.seed(1)
 rstan_options(auto_write = TRUE)
 
 args <- commandArgs(TRUE)
-iter <- 100000
-warmup <- 50000
+iter <- 20000
+warmup <- 5000
 chains <- 4
 
 stanfit <- stan(file = paste(args[1], ".stan", sep = ""),

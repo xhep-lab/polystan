@@ -20,6 +20,11 @@ real std_normal_prior(real x) {
   return inv_Phi(x);
 }
 
+vector std_normal_prior(vector x) {
+  // if $\vec x \sim \mathcal{U}(0, 1)$ then $\vec y \sim \mathcal{N}(0, 1)$
+  return inv_Phi(x);
+}
+
 real half_std_normal_prior(real x) {
   // if $x \sim \mathcal{U}(0, 1)$ then $y \sim \mathcal{N}_{>0}(0, 1)$
   return std_normal_prior(flat_prior(x, 0.5, 1.));
@@ -27,6 +32,11 @@ real half_std_normal_prior(real x) {
 
 real normal_prior(real x, real mu, real sigma) {
   // if $x \sim \mathcal{U}(0, 1)$ then $y \sim \mathcal{N}(\mu, \sigma^2)$
+  return inv_Phi(x) * sigma + mu;
+}
+
+vector normal_prior(vector x, real mu, real sigma) {
+  // if $\vec x \sim \mathcal{U}(0, 1)$ then $\vec y \sim \mathcal{N}(\mu, \sigma^2)$
   return inv_Phi(x) * sigma + mu;
 }
 
@@ -58,6 +68,17 @@ real lognormal_prior(real x, real mu, real sigma) {
 real beta_prior(real x, real alpha, real beta) {
   // if $x \sim \mathcal{U}(0, 1)$ then $y \sim \text{Beta}(\alpha, \beta)$
   return inv_inc_beta(alpha, beta, x);
+}
+
+real beta_prime_prior(real x, real alpha, real beta) {
+  // if $x \sim \mathcal{U}(0, 1)$ then $y \sim \text{Beta}'(\alpha, \beta)$
+  real p = inv_inc_beta(alpha, beta, x);
+  return p / (1. - p);
+}
+
+real dagum_prior(real x, real p, real a, real b) {
+  // if $x \sim \mathcal{U}(0, 1)$ then $y \sim \text{Dag}(p, a, b)$
+  return b * pow(pow(x, -1. / p) - 1., -1. / a);
 }
 
 real exponential_prior(real x, real lambda) {

@@ -118,7 +118,7 @@ format-python-files: test/*.py contrib/*.py
 	$(foreach f, $^, isort $f; black $f;)
 
 .PHONY: format-stan-files
-format-stan-files: examples/*stan stanfunctions/*.stanfunctions test/format/*.stan
+format-stan-files: examples/*stan stanfunctions/*.stanfunctions test/constraint_examples/*.stan
 	$(foreach f, $^, $(STANC) --auto-format $(f) --o $(f) --include-paths ./stanfunctions;)
 
 format: format-cxx-files format-python-files format-stan-files

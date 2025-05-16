@@ -14,7 +14,11 @@ ROOT = os.path.normpath(os.path.join(CWD, ".."))
 
 EXAMPLE = os.path.join(ROOT, "examples")
 
-EXAMPLES = [os.path.splitext(n)[0] for n in os.listdir(EXAMPLE) if n.endswith(".stan")]
+EXAMPLES = [
+    os.path.join(EXAMPLE, os.path.splitext(n)[0])
+    for n in os.listdir(EXAMPLE)
+    if n.endswith(".stan")
+]
 
 EXPECTED_FILE_NAME = os.path.join(CWD, "expected_logz_examples.json")
 with open(EXPECTED_FILE_NAME, "r", encoding="utf-8") as expected_file:
@@ -24,8 +28,7 @@ SEED = 127
 
 
 def make_polystan(example):
-    target = os.path.join(EXAMPLE, example)
-    subprocess.check_call(f"make {target}", shell=True, cwd=ROOT)
+    subprocess.check_call(f"make {example}", shell=True, cwd=ROOT)
 
 
 def cli_subargs(**kwargs):
@@ -37,17 +40,29 @@ def cli_args(**kwargs):
 
 
 def find_data_file(example):
-    data_file = f"{os.path.join(EXAMPLE, example)}.data.json"
+    data_file = f"{example}.data.json"
     if os.path.isfile(data_file):
         return data_file
     return None
 
 
-def run_polystan_example(example, data_file=None, **kwargs):
+def run_polystan_example(example, data_file=None, seed=None, **kwargs):
 
     make_polystan(example)
 
-    args = {"random": {"seed": SEED}, "polychord": {"seed": SEED, "overwrite": 1}}
+    if seed is None:
+        seed = SEED
+
+    args = {
+        "random": {"seed": seed},
+        "polychord": {
+            "seed": seed,
+            "overwrite": 1,
+            "no-write": 1,
+            "no-derived": 1,
+            "write-stats": 1,
+        },
+    }
 
     for k, v in kwargs.items():
         args[k].update(v)
@@ -58,13 +73,13 @@ def run_polystan_example(example, data_file=None, **kwargs):
     if data_file is not None:
         args["data"] = {"file": data_file}
 
-    subprocess.check_call(f"./{example} {cli_args(**args)}", shell=True, cwd=EXAMPLE)
+    subprocess.check_call(f"{example} {cli_args(**args)}", shell=True)
 
     return read_polystan_evidence(example)
 
 
 def read_polystan_evidence(example):
-    result_name = os.path.join(EXAMPLE, f"{example}.json")
+    result_name = f"{example}.json"
     with open(result_name, "r", encoding="utf-8") as result_file:
         result = json.load(result_file)
     data = result["sample_stats"]["evidence"]
@@ -74,7 +89,8 @@ def read_polystan_evidence(example):
 
 @pytest.mark.parametrize("example", EXAMPLES)
 def test_evidence(example):
-    assert run_polystan_example(example)["log evidence"] == EXPECTED[example]
+    name = os.path.split(example)[1]
+    assert run_polystan_example(example)["log evidence"] == EXPECTED[name]
 
 
 if __name__ == "__main__":
@@ -82,7 +98,8 @@ if __name__ == "__main__":
     expected = {}
 
     for example in EXAMPLES:
-        expected[example] = run_polystan_example(example)["log evidence"]
+        name = os.path.split(example)[1]
+        expected[name] = run_polystan_example(example)["log evidence"]
 
     with open(EXPECTED_FILE_NAME, "w", encoding="utf-8") as expected_file:
         json.dump(expected, expected_file)
