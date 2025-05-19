@@ -9,7 +9,7 @@ import subprocess
 import arviz as az
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.stats import beta, cauchy, expon, norm
+from scipy.stats import beta, betaprime, cauchy, expon, mielke, norm
 
 CWD = os.path.dirname(os.path.realpath(__file__))
 ROOT = os.path.normpath(os.path.join(CWD, ".."))
@@ -36,9 +36,15 @@ if __name__ == "__main__":
 
     target = os.path.join(EXAMPLES, "priors")
     subprocess.check_call(f"make {target}", shell=True, cwd=ROOT)
-    subprocess.check_call("./priors", shell=True, cwd=EXAMPLES)
+    subprocess.check_call(
+        "./priors polychord --nlive 20000 --nprior 100000 --write-samples",
+        shell=True,
+        cwd=EXAMPLES,
+    )
 
-    data = az.from_json("priors.json")
+    data_file = os.path.join(EXAMPLES, "priors.json")
+    data = az.from_json(data_file)
+    print(az.summary(data))
 
     # flat_prior
 
@@ -93,6 +99,33 @@ if __name__ == "__main__":
     x = np.linspace(0, 1, 1000)
     y = beta.pdf(x, 0.5, 0.5)
     plotter(x, y, "beta")
+
+    # beta_prime_prior
+
+    x = np.linspace(0, 10, 1000)
+    y = betaprime.pdf(x, 2, 2)
+    plotter(
+        x,
+        y,
+        "beta_prime",
+        kind="hist",
+        bins=np.linspace(x.min(), x.max(), 500),
+        density=True,
+    )
+
+    # dagum prior
+
+    dagum = lambda p, a, b: mielke(a * p, a, scale=b)
+    x = np.linspace(0, 10, 1000)
+    y = dagum(1, 1, 1).pdf(x)
+    plotter(
+        x,
+        y,
+        "dagum",
+        kind="hist",
+        bins=np.linspace(x.min(), x.max(), 500),
+        density=True,
+    )
 
     # exponential_prior
 

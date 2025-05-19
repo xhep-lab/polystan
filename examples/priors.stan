@@ -23,4 +23,6 @@ transformed parameters {
   real exponential = exponential_prior(x, 2);
   real cauchy = cauchy_prior(x, -5, 2);
   real half_cauchy = half_cauchy_prior(x, 8, 3);
+  real dagum = dagum_prior(x, 1, 1, 1);
+  real beta_prime = beta_prime_prior(x, 2, 2);
 }
