@@ -23,6 +23,9 @@
 
 namespace polystan {
 
+const double LOG_ZERO_STAN
+    = -0.5e30;  // set greater than PolyChord default log zero
+
 std::optional<std::string> unconstrain_err(const bs_model* model,
                                            const std::vector<double>& theta) {
   double* theta_unc = new double[theta.size()];
@@ -108,6 +111,12 @@ double loglike(const bs_model* model, bs_rng* rng, double* theta, int ndim,
 
   if (err_code != 0) {
     throw std::runtime_error(add_to_err(err));
+  }
+
+  // indicate that these points are rejected by likelihood and not by prior
+
+  if (std::isinf(loglike) || loglike < LOG_ZERO_STAN) {
+    return LOG_ZERO_STAN;
   }
 
   return loglike;
@@ -426,6 +435,11 @@ class Model {
 
     if (settings.num_repeats == default_zero.num_repeats) {
       settings.num_repeats = fixed.num_repeats;
+    }
+
+    if (settings.logzero >= LOG_ZERO_STAN) {
+      throw std::runtime_error(
+          "PolyChord's log zero was greater than or equal to Stan's log zero");
     }
   }
 

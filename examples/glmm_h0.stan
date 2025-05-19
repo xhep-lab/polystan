@@ -17,5 +17,5 @@ transformed parameters {
   vector[n_turtles] p = Phi(alpha[1] + alpha[2] * weight);
 }
 model {
-  survived ~ bernoulli(p);
+  target += bernoulli_lpmf(survived | p);
 }

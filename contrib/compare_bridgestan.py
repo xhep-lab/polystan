@@ -10,7 +10,7 @@ import subprocess
 from test_examples import EXAMPLES, find_data_file, run_polystan_example
 
 CWD = os.path.dirname(os.path.realpath(__file__))
-SCRIPT = os.path.join(CWD, "bs.R")
+SCRIPT = os.path.join(CWD, "bs_rstan.R")
 HEADERS = os.path.normpath(os.path.join(CWD, "..", "stanfunctions"))
 
 
