@@ -57,10 +57,10 @@ def run_polystan_example(example, data_file=None, seed=None, **kwargs):
         "random": {"seed": seed},
         "polychord": {
             "seed": seed,
-            "overwrite": 1,
-            "no-write": 1,
-            "no-derived": 1,
-            "write-stats": 1,
+            "overwrite": True,
+            "no-write": True,
+            "no-derived": True,
+            "write-stats": True,
         },
     }
 

@@ -4,16 +4,12 @@ Inspect priors to check transforms
 """
 
 import os
-import subprocess
 
 import arviz as az
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import beta, betaprime, cauchy, expon, mielke, norm
-
-CWD = os.path.dirname(os.path.realpath(__file__))
-ROOT = os.path.normpath(os.path.join(CWD, ".."))
-EXAMPLES = os.path.join(ROOT, "examples")
+from test_examples import EXAMPLE, run_polystan_example
 
 
 def plotter(x, y, name, **kwargs):
@@ -34,17 +30,20 @@ def plotter2d(name):
 
 if __name__ == "__main__":
 
-    target = os.path.join(EXAMPLES, "priors")
-    subprocess.check_call(f"make {target}", shell=True, cwd=ROOT)
-    subprocess.check_call(
-        "./priors polychord --nlive 20000 --nprior 100000 --write-samples",
-        shell=True,
-        cwd=EXAMPLES,
+    target = os.path.join(EXAMPLE, "priors")
+    run_polystan_example(
+        target,
+        polychord={
+            "no-derived": False,
+            "nlive": 1,
+            "nprior": 10000,
+            "write-prior": True,
+        },
     )
 
-    data_file = os.path.join(EXAMPLES, "priors.json")
+    data_file = "priors.json"
     data = az.from_json(data_file)
-    print(az.summary(data))
+    print(az.summary(data, group="prior"))
 
     # flat_prior
 

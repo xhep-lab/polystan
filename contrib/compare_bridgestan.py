@@ -39,7 +39,7 @@ def run_r_example(example, data_file=None):
 
 def run_ps_bs(example):
     data_file = find_data_file(example)
-    ps = run_polystan_example(example, data_file)
+    ps = run_polystan_example(example, data_file, polychord={"write-dead": True})
     bs = run_r_example(example, data_file)
     return ps, bs
 

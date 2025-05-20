@@ -307,7 +307,8 @@ class Model {
     if (posterior_samples_.has_value()) {
       posterior_entry.add(names_, posterior_samples_.value());
     } else {
-      posterior_entry.set("did not write equally weighted posterior points");
+      posterior_entry.add("metadata",
+                          "Did not write equally weighted posterior points");
     }
 
     json::Object prior_entry;
@@ -316,7 +317,8 @@ class Model {
     if (prior_samples_.has_value()) {
       prior_entry.add(names_, prior_samples_.value());
     } else {
-      prior_entry.set("did not write equally weighted prior points");
+      prior_entry.add("metadata",
+                      "Did not write equally weighted prior points");
     }
 
     // write to disk
@@ -341,7 +343,8 @@ class Model {
   }
 
   std::vector<std::string> names() const {
-    return read::param_names(bs_param_names(model, true, true));
+    const bool derived = !no_derived();
+    return read::param_names(bs_param_names(model, derived, derived));
   }
 
   std::vector<std::string> param_names() const {
