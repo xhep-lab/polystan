@@ -95,3 +95,25 @@ real half_cauchy_prior(real x, real x0, real gamma) {
   // if $x \sim \mathcal{U}(0, 1)$ then $y \sim \text{Cauchy}_{>x_0}(x_0, \gamma)$
   return cauchy_prior(flat_prior(x, 0.5, 1.), x0, gamma);
 }
+
+int categorical_prior(real x, vector p) {
+  // if $x \sim \mathcal{U}(0, 1)$ then $y \sim \text{Categorical}(p)$
+  int N = size(p);
+  vector[N] cmf = cumulative_sum(p);
+  for (i in 1 : N - 1) {
+    if (x < cmf[i]) {
+      return i;
+    }
+  }
+  return N;
+}
+
+int flat_prior(real x, int N) {
+  // if $x \sim \mathcal{U}(0, 1)$ then $y \sim \mathcal{U}(1, N)$
+  for (i in 1 : N - 1) {
+    if (x < i * 1. / N) {
+      return i;
+    }
+  }
+  return N;
+}
