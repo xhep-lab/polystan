@@ -6,6 +6,7 @@ Compare bridgesampling and polystan
 import json
 import os
 import subprocess
+import sys
 
 from test_examples import EXAMPLES, find_data_file, run_polystan_example
 
@@ -48,7 +49,9 @@ if __name__ == "__main__":
 
     results = {}
 
-    for example in EXAMPLES:
+    examples = sys.argv[1:] or EXAMPLES
+
+    for example in examples:
         ps, bs = run_ps_bs(example)
         print(f"# example: {example}")
         print(f"polystan: {ps}")
