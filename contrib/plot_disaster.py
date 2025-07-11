@@ -16,7 +16,7 @@ plt.style.use('ggplot')
 plt.rcParams.update({'font.size': 12, 'font.family': 'Liberation Sans'})
 
 # make data
-target = example("disaster")
+target = example("disaster.stan")
 data = run_polystan(target)
 
 # fetch data

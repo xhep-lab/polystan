@@ -29,7 +29,7 @@ def write_expected():
     expected = {}
 
     for example in examples():
-        name = os.path.split(example)[1]
+        name = os.path.splitext(os.path.split(example)[1])[0]
         expected[name] = read_evidence(run_polystan(example))
 
     with open(EXPECTED_FILE_NAME, "w", encoding="utf-8") as expected_file:
@@ -38,7 +38,7 @@ def write_expected():
 
 @pytest.mark.parametrize("example", examples())
 def test_evidence(example):
-    name = os.path.split(example)[1]
+    name = os.path.splitext(os.path.split(example)[1])[0]
     data = run_polystan(example)
     assert read_evidence(data) == read_expected()[name]
 

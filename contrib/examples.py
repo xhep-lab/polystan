@@ -13,7 +13,7 @@ EXAMPLE_DIR = os.path.join(ROOT, "examples")
 
 def search_programs(dir_):
     return [
-        os.path.join(dir_, os.path.splitext(n)[0])
+        os.path.join(dir_, n)
         for n in os.listdir(dir_)
         if n.endswith(".stan")
     ]
@@ -24,7 +24,6 @@ def examples():
 
 
 def example(name):
-    target = os.path.join(EXAMPLE_DIR, name)
-    stan_file = f"{target}.stan"
+    stan_file  = os.path.join(EXAMPLE_DIR, name)
     assert os.path.isfile(stan_file)
-    return target
+    return stan_file

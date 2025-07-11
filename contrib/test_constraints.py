@@ -17,7 +17,7 @@ CONSTRAINT_EXAMPLES = os.path.join(CWD, "constraint_examples")
 
 
 ALL = search_programs(CONSTRAINT_EXAMPLES)
-PASS = [os.path.join(CONSTRAINT_EXAMPLES, "right")]
+PASS = [os.path.join(CONSTRAINT_EXAMPLES, "right.stan")]
 FAIL = [f for f in ALL if f not in PASS]
 
 

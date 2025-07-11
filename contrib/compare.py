@@ -33,7 +33,7 @@ if __name__ == "__main__":
         print(f"polystan: {polystan_summary}")
         print(f"bridge_sampling: {bridge_sampling}")
 
-        name = os.path.split(example)[1]
+        name = os.path.splitext(os.path.split(example)[1])[0]
         results[name] = {"polystan": polystan_summary,
                          "bridge_sampling": bridge_sampling}
 

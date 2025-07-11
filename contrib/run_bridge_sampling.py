@@ -11,9 +11,10 @@ SCRIPT = os.path.join(CWD, "bridge_sampling.R")
 HEADERS = os.path.normpath(os.path.join(CWD, "..", "stanfunctions"))
 
 
-def run_bridge_sampling(target, iter_=20_000, warmup=5_000, chains=4, seed=0):
+def run_bridge_sampling(stan_file, iter_=20_000, warmup=5_000, chains=4, seed=0):
     r = ro.r
     r.source(SCRIPT)
+    target = os.path.splitext(stan_file)[0]
     data = list(r.bridge_sampling(target, iter_, warmup, chains, seed, HEADERS))
     data[-1] = int(data[-1])
     keys = ["log evidence", "error log evidence", "neval"]

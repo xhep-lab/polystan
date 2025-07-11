@@ -31,7 +31,7 @@ def plotter2d(data, name, **kwargs):
 
 if __name__ == "__main__":
 
-    target = example("priors")
+    target = example("priors.stan")
     data = run_polystan(
         target,
         polychord={

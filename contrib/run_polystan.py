@@ -31,7 +31,9 @@ def find_data_file(target):
     return None
 
 
-def run_polystan(target, data_file=None, seed=0, **kwargs):
+def run_polystan(stan_file, data_file=None, seed=0, **kwargs):
+
+    target = os.path.splitext(stan_file)[0]
 
     make_polystan(target)
 
