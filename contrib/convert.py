@@ -1,5 +1,5 @@
 """
-Script to ease writing PolyStan models
+Script to ease writing polystan models
 ======================================
 """
 

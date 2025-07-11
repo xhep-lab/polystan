@@ -3,16 +3,16 @@ Inspect priors to check transforms
 ==================================
 """
 
-import os
-
 import arviz as az
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import beta, betaprime, cauchy, expon, mielke, norm
-from test_examples import EXAMPLE, run_polystan_example
+
+from run_polystan import run_polystan
+from examples import example
 
 
-def plotter(x, y, name, **kwargs):
+def plotter(data, x, y, name, **kwargs):
     plt.clf()
     az.plot_posterior(
         data, name, group="prior", hdi_prob="hide", point_estimate=None, **kwargs
@@ -22,16 +22,17 @@ def plotter(x, y, name, **kwargs):
     plt.savefig(name + ".pdf")
 
 
-def plotter2d(name):
+def plotter2d(data, name, **kwargs):
     plt.clf()
-    az.plot_kde(data["prior"][name + ".1"], data["prior"][name + ".2"])
+    az.plot_kde(data["prior"][name + ".1"],
+                data["prior"][name + ".2"], **kwargs)
     plt.savefig(name + ".pdf")
 
 
 if __name__ == "__main__":
 
-    target = os.path.join(EXAMPLE, "priors")
-    run_polystan_example(
+    target = example("priors")
+    data = run_polystan(
         target,
         polychord={
             "no-derived": False,
@@ -41,127 +42,127 @@ if __name__ == "__main__":
         },
     )
 
-    data_file = "priors.json"
-    data = az.from_json(data_file)
     print(az.summary(data, group="prior"))
 
     # flat_prior
 
     x = np.linspace(5, 10, 1000)
     y = np.ones_like(x) / 5.0
-    plotter(x, y, "flat")
+    plotter(data, x, y, "flat")
 
     # log_prior
 
     x = np.linspace(0, 3, 1000)
     y = np.ones_like(x) / 3.0
-    plotter(x, y, "log_", transform=np.log10)
+    plotter(data, x, y, "log_", transform=np.log10)
 
     # std_normal_prior
 
     x = np.linspace(-5, 5, 1000)
     y = norm.pdf(x)
-    plotter(x, y, "std_normal")
+    plotter(data, x, y, "std_normal")
 
     # half_std_normal_prior
 
     x = np.linspace(0, 5, 1000)
     y = 2 * norm.pdf(x)
-    plotter(x, y, "half_std_normal")
+    plotter(data, x, y, "half_std_normal")
 
     # normal_prior
 
     x = np.linspace(-5, 25, 1000)
     y = norm.pdf(x, 10, 3)
-    plotter(x, y, "normal")
+    plotter(data, x, y, "normal")
 
     # half_normal_prior
 
     x = np.linspace(50, 100, 1000)
     y = 2 * norm.pdf(x, 50, 10)
-    plotter(x, y, "half_normal")
+    plotter(data, x, y, "half_normal")
 
     # log10normal_prior
 
     x = np.linspace(-90, 110, 1000)
     y = norm.pdf(x, 10, 20)
-    plotter(x, y, "log10normal", transform=np.log10)
+    plotter(data, x, y, "log10normal", transform=np.log10)
 
     # lognormal_prior
 
     x = np.linspace(-6, 14, 1000)
     y = norm.pdf(x, 4, 2)
-    plotter(x, y, "lognormal", transform=np.log)
+    plotter(data, x, y, "lognormal", transform=np.log)
 
     # beta_prior
 
     x = np.linspace(0, 1, 1000)
     y = beta.pdf(x, 0.5, 0.5)
-    plotter(x, y, "beta")
+    plotter(data, x, y, "beta")
 
     # beta_prime_prior
 
     x = np.linspace(0, 10, 1000)
     y = betaprime.pdf(x, 2, 2)
-    plotter(
-        x,
-        y,
-        "beta_prime",
-        kind="hist",
-        bins=np.linspace(x.min(), x.max(), 500),
-        density=True,
-    )
+    plotter(data,
+            x,
+            y,
+            "beta_prime",
+            kind="hist",
+            bins=np.linspace(x.min(), x.max(), 500),
+            density=True,
+            )
 
     # dagum prior
 
-    dagum = lambda p, a, b: mielke(a * p, a, scale=b)
+    def dagum(p, a, b):
+        return mielke(a * p, a, scale=b)
+
     x = np.linspace(0, 10, 1000)
     y = dagum(1, 1, 1).pdf(x)
-    plotter(
-        x,
-        y,
-        "dagum",
-        kind="hist",
-        bins=np.linspace(x.min(), x.max(), 500),
-        density=True,
-    )
+    plotter(data,
+            x,
+            y,
+            "dagum",
+            kind="hist",
+            bins=np.linspace(x.min(), x.max(), 500),
+            density=True,
+            )
 
     # exponential_prior
 
     x = np.linspace(0, 10, 1000)
     y = expon.pdf(x, 0.0, 0.5)
-    plotter(x, y, "exponential")
+    plotter(data, x, y, "exponential")
 
     # cauchy_prior
 
     x = np.linspace(-35, 25, 1000)
     y = cauchy.pdf(x, -5, 2)
-    plotter(
-        x,
-        y,
-        "cauchy",
-        kind="hist",
-        bins=np.linspace(x.min(), x.max(), 500),
-        density=True,
-    )
+    plotter(data,
+            x,
+            y,
+            "cauchy",
+            kind="hist",
+            bins=np.linspace(x.min(), x.max(), 500),
+            density=True,
+            )
 
     # half_cauchy_prior
 
     x = np.linspace(8, 38, 1000)
     y = 2.0 * cauchy.pdf(x, 8, 3)
-    plotter(
-        x,
-        y,
-        "half_cauchy",
-        kind="hist",
-        bins=np.linspace(x.min(), x.max(), 500),
-        density=True,
-    )
+    plotter(data,
+            x,
+            y,
+            "half_cauchy",
+            kind="hist",
+            bins=np.linspace(x.min(), x.max(), 500),
+            density=True,
+            )
 
     # multi_normal_prior
 
-    plotter2d("multi_normal")
+    plotter2d(data, "multi_normal")
 
     # multi_normal_cholesky_prior
 
-    plotter2d("multi_normal_cholesky")
+    plotter2d(data, "multi_normal_cholesky")
