@@ -1,4 +1,4 @@
-# run bridgesampling with Stan MCMC chains on Stan models
+# run bridge sampling with Stan MCMC chains on Stan models
 
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load("bridgesampling", "rstan", "jsonlite")

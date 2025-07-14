@@ -1,0 +1,37 @@
+# serializer version: 1
+# name: test_evidence[/home/andrew/repos/polystan/examples/bernoulli.stan]
+  -6.199459075927734
+# ---
+# name: test_evidence[/home/andrew/repos/polystan/examples/disaster.stan]
+  -176.7947540283203
+# ---
+# name: test_evidence[/home/andrew/repos/polystan/examples/eggbox.stan]
+  -15.066864967346191
+# ---
+# name: test_evidence[/home/andrew/repos/polystan/examples/gaussian.stan]
+  -0.00551773514598608
+# ---
+# name: test_evidence[/home/andrew/repos/polystan/examples/glmm_h0.stan]
+  -156.30838012695312
+# ---
+# name: test_evidence[/home/andrew/repos/polystan/examples/glmm_h1.stan]
+  -156.48731994628906
+# ---
+# name: test_evidence[/home/andrew/repos/polystan/examples/himmelblau.stan]
+  -4.4977874755859375
+# ---
+# name: test_evidence[/home/andrew/repos/polystan/examples/priors.stan]
+  -0.0009999993490055203
+# ---
+# name: test_evidence[/home/andrew/repos/polystan/examples/rastrigin.stan]
+  -22.82518768310547
+# ---
+# name: test_evidence[/home/andrew/repos/polystan/examples/rosenbrock.stan]
+  -9.264966011047363
+# ---
+# name: test_evidence[/home/andrew/repos/polystan/examples/shell.stan]
+  -5.59080171585083
+# ---
+# name: test_evidence[/home/andrew/repos/polystan/examples/slab_spike.stan]
+  -4.565235137939453
+# ---

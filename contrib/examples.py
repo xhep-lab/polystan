@@ -24,6 +24,6 @@ def examples():
 
 
 def example(name):
-    stan_file  = os.path.join(EXAMPLE_DIR, name)
+    stan_file = os.path.join(EXAMPLE_DIR, name)
     assert os.path.isfile(stan_file)
     return stan_file

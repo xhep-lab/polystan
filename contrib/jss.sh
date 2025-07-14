@@ -1,7 +1,7 @@
 # This is a guide to reproducing examples from the paper on a
 # Ubuntu/debian system
 
-# First, we install necessary dependencies
+# First, we install necessary dependencies for polystan
 
 sudo apt-get install git make gcc gfortran libopenmpi-dev
 
@@ -28,21 +28,26 @@ pip install -r contrib/requirements.txt
 
 # Now we reproduce figure 2 from a Python script
 
-python3 contrib/plot_disaster.py
+python3 contrib/test_disaster.py
 
 # This creates "disaster.pdf". Take a look
 
 xdg-open disaster.pdf
 
 # Now we reproduce comparisons of bridge sampling and polystan that appear in
-# Section 6 Examples from a Python script. This command may take some time
+# Section 6 Examples from a Python script. First, we need to install R
 
-python3 contrib/compare.py
+sudo apt install r-base-dev
+
+# Now we run our examples. This command may take some time
+
+python3 contrib/test_compare.py
 
 # This creates a data file "compare.json". Take a look
 
 more compare.json
 
-# Lastly, we can run the unit tests
+# Lastly, we can run the unit tests. Amongst other things, this checks
+# all results in the paper
 
 python3 -m pytest .

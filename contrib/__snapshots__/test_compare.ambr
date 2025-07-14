@@ -1,0 +1,169 @@
+# serializer version: 1
+# name: test_compare[/home/andrew/repos/polystan/examples/bernoulli.stan]
+  dict({
+    'bridge_sampling': dict({
+      'error log evidence': 0.00036198557800761855,
+      'log evidence': -6.204891875185858,
+      'neval': 243238,
+    }),
+    'polystan': dict({
+      'error log evidence': 0.028646834194660187,
+      'log evidence': -6.20444393157959,
+      'neval': 171591,
+    }),
+  })
+# ---
+# name: test_compare[/home/andrew/repos/polystan/examples/disaster.stan]
+  dict({
+    'bridge_sampling': dict({
+      'error log evidence': 0.0019391763933108972,
+      'log evidence': -62.060800597355986,
+      'neval': 81476776,
+    }),
+    'polystan': dict({
+      'error log evidence': 0.0852375477552414,
+      'log evidence': -176.81947326660156,
+      'neval': 1019612,
+    }),
+  })
+# ---
+# name: test_compare[/home/andrew/repos/polystan/examples/eggbox.stan]
+  dict({
+    'bridge_sampling': dict({
+      'error log evidence': 0.12520157052391095,
+      'log evidence': -28.32333641032787,
+      'neval': 796773,
+    }),
+    'polystan': dict({
+      'error log evidence': 0.10254349559545517,
+      'log evidence': -15.058009147644043,
+      'neval': 3616587,
+    }),
+  })
+# ---
+# name: test_compare[/home/andrew/repos/polystan/examples/gaussian.stan]
+  dict({
+    'bridge_sampling': dict({
+      'error log evidence': 0.0005550944925997108,
+      'log evidence': 0.0001913011388094965,
+      'neval': 563334,
+    }),
+    'polystan': dict({
+      'error log evidence': 0.09363611787557602,
+      'log evidence': 0.15033656358718872,
+      'neval': 4504083,
+    }),
+  })
+# ---
+# name: test_compare[/home/andrew/repos/polystan/examples/glmm_h0.stan]
+  dict({
+    'bridge_sampling': dict({
+      'error log evidence': 0.000499565932972676,
+      'log evidence': -156.4786688835977,
+      'neval': 1104770,
+    }),
+    'polystan': dict({
+      'error log evidence': 0.08078835159540176,
+      'log evidence': -156.21998596191406,
+      'neval': 604896,
+    }),
+  })
+# ---
+# name: test_compare[/home/andrew/repos/polystan/examples/glmm_h1.stan]
+  dict({
+    'bridge_sampling': dict({
+      'error log evidence': 0.004745438237276931,
+      'log evidence': -156.7134162084404,
+      'neval': 3374200,
+    }),
+    'polystan': dict({
+      'error log evidence': 0.11430605500936508,
+      'log evidence': -156.36294555664062,
+      'neval': 10294516,
+    }),
+  })
+# ---
+# name: test_compare[/home/andrew/repos/polystan/examples/himmelblau.stan]
+  dict({
+    'bridge_sampling': dict({
+      'error log evidence': 0.03346829929570338,
+      'log evidence': -4.8657796489451695,
+      'neval': 332999,
+    }),
+    'polystan': dict({
+      'error log evidence': 0.06811784952878952,
+      'log evidence': -4.635522842407227,
+      'neval': 912030,
+    }),
+  })
+# ---
+# name: test_compare[/home/andrew/repos/polystan/examples/priors.stan]
+  dict({
+    'bridge_sampling': dict({
+      'error log evidence': 0.0006687792506750713,
+      'log evidence': -0.0004984683559818848,
+      'neval': 405564,
+    }),
+    'polystan': dict({
+      'error log evidence': 0.0009990012040361762,
+      'log evidence': -0.0009999993490055203,
+      'neval': 20579,
+    }),
+  })
+# ---
+# name: test_compare[/home/andrew/repos/polystan/examples/rastrigin.stan]
+  dict({
+    'bridge_sampling': dict({
+      'error log evidence': 0.04646268945472804,
+      'log evidence': -104.18237881301465,
+      'neval': 568046,
+    }),
+    'polystan': dict({
+      'error log evidence': 0.1631445735692978,
+      'log evidence': -24.148386001586914,
+      'neval': 12564554,
+    }),
+  })
+# ---
+# name: test_compare[/home/andrew/repos/polystan/examples/rosenbrock.stan]
+  dict({
+    'bridge_sampling': dict({
+      'error log evidence': 0.02448387058417394,
+      'log evidence': -9.378885257962041,
+      'neval': 2240925,
+    }),
+    'polystan': dict({
+      'error log evidence': 0.11285044997930527,
+      'log evidence': -9.257025718688965,
+      'neval': 2077030,
+    }),
+  })
+# ---
+# name: test_compare[/home/andrew/repos/polystan/examples/shell.stan]
+  dict({
+    'bridge_sampling': dict({
+      'error log evidence': 0.012200964559424895,
+      'log evidence': -5.708345130782098,
+      'neval': 3949480,
+    }),
+    'polystan': dict({
+      'error log evidence': 0.09432794898748398,
+      'log evidence': -5.640108108520508,
+      'neval': 1847206,
+    }),
+  })
+# ---
+# name: test_compare[/home/andrew/repos/polystan/examples/slab_spike.stan]
+  dict({
+    'bridge_sampling': dict({
+      'error log evidence': 0.0007164800110462592,
+      'log evidence': -5.341181197687126,
+      'neval': 259280,
+    }),
+    'polystan': dict({
+      'error log evidence': 0.050396740436553955,
+      'log evidence': -4.599237442016602,
+      'neval': 341354,
+    }),
+  })
+# ---

@@ -16,10 +16,14 @@ jobs:
       with:
         submodules: recursive
     - name: dependencies
-      run: sudo apt-get install gfortran libopenmpi-dev python3-pytest
+      run: sudo apt-get install gfortran libopenmpi-dev
     - name: make
       run: make ./examples/bernoulli
     - name: run
       run: ./examples/bernoulli data --file=./examples/bernoulli.data.json
+    - name: test dependencies
+      run: |
+        sudo apt-get install r-base-dev python3-pip python3-pytest
+        pip3 install -r contrib/requirements.txt
     - name: test
-      run: pytest-3 test/
+      run: pytest-3 .
