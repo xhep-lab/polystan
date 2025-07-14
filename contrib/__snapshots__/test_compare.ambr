@@ -1,5 +1,5 @@
 # serializer version: 1
-# name: test_compare[/home/andrew/repos/polystan/examples/bernoulli.stan]
+# name: test_compare[bernoulli.stan]
   dict({
     'bridge_sampling': dict({
       'error log evidence': 0.00036198557800761855,
@@ -13,7 +13,7 @@
     }),
   })
 # ---
-# name: test_compare[/home/andrew/repos/polystan/examples/disaster.stan]
+# name: test_compare[disaster.stan]
   dict({
     'bridge_sampling': dict({
       'error log evidence': 0.0019391763933108972,
@@ -27,7 +27,7 @@
     }),
   })
 # ---
-# name: test_compare[/home/andrew/repos/polystan/examples/eggbox.stan]
+# name: test_compare[eggbox.stan]
   dict({
     'bridge_sampling': dict({
       'error log evidence': 0.12520157052391095,
@@ -41,7 +41,7 @@
     }),
   })
 # ---
-# name: test_compare[/home/andrew/repos/polystan/examples/gaussian.stan]
+# name: test_compare[gaussian.stan]
   dict({
     'bridge_sampling': dict({
       'error log evidence': 0.0005550944925997108,
@@ -55,7 +55,7 @@
     }),
   })
 # ---
-# name: test_compare[/home/andrew/repos/polystan/examples/glmm_h0.stan]
+# name: test_compare[glmm_h0.stan]
   dict({
     'bridge_sampling': dict({
       'error log evidence': 0.000499565932972676,
@@ -69,7 +69,7 @@
     }),
   })
 # ---
-# name: test_compare[/home/andrew/repos/polystan/examples/glmm_h1.stan]
+# name: test_compare[glmm_h1.stan]
   dict({
     'bridge_sampling': dict({
       'error log evidence': 0.004745438237276931,
@@ -83,7 +83,7 @@
     }),
   })
 # ---
-# name: test_compare[/home/andrew/repos/polystan/examples/himmelblau.stan]
+# name: test_compare[himmelblau.stan]
   dict({
     'bridge_sampling': dict({
       'error log evidence': 0.03346829929570338,
@@ -97,7 +97,7 @@
     }),
   })
 # ---
-# name: test_compare[/home/andrew/repos/polystan/examples/priors.stan]
+# name: test_compare[priors.stan]
   dict({
     'bridge_sampling': dict({
       'error log evidence': 0.0006687792506750713,
@@ -111,7 +111,7 @@
     }),
   })
 # ---
-# name: test_compare[/home/andrew/repos/polystan/examples/rastrigin.stan]
+# name: test_compare[rastrigin.stan]
   dict({
     'bridge_sampling': dict({
       'error log evidence': 0.04646268945472804,
@@ -125,7 +125,7 @@
     }),
   })
 # ---
-# name: test_compare[/home/andrew/repos/polystan/examples/rosenbrock.stan]
+# name: test_compare[rosenbrock.stan]
   dict({
     'bridge_sampling': dict({
       'error log evidence': 0.02448387058417394,
@@ -139,7 +139,7 @@
     }),
   })
 # ---
-# name: test_compare[/home/andrew/repos/polystan/examples/shell.stan]
+# name: test_compare[shell.stan]
   dict({
     'bridge_sampling': dict({
       'error log evidence': 0.012200964559424895,
@@ -153,7 +153,7 @@
     }),
   })
 # ---
-# name: test_compare[/home/andrew/repos/polystan/examples/slab_spike.stan]
+# name: test_compare[slab_spike.stan]
   dict({
     'bridge_sampling': dict({
       'error log evidence': 0.0007164800110462592,

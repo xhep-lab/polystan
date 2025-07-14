@@ -2,6 +2,8 @@
 Compare bridge sampling and polystan
 ====================================
 """
+
+import os
 import pytest
 
 from examples import examples
@@ -12,6 +14,8 @@ from run_bridge_sampling import run_bridge_sampling
 POLYCHORD_SETTINGS = {"no-feedback": True,
                       "no-derived": True, "nlive": 1000, "write-stats": True}
 BRIDGE_SAMPLING_SETTINGS = {"iter_": 20_000, "warmup": 5_000, "chains": 4}
+
+EXAMPLES = {os.path.basename(e): e for e in examples()}
 
 
 def compare(example):
@@ -25,8 +29,9 @@ def compare(example):
     return {"polystan": polystan_summary, "bridge_sampling": bridge_sampling}
 
 
-@pytest.mark.parametrize("example", examples())
+@pytest.mark.parametrize("example", EXAMPLES.keys())
 def test_compare(example, snapshot):
+    example = EXAMPLES[example]
     assert compare(example) == snapshot
 
 
