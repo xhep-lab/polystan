@@ -8,7 +8,7 @@ sudo apt-get install git make gcc gfortran libopenmpi-dev
 
 # We also install some dependencies for our R comparisons
 
-sudo apt install r-base-dev gcc-x86-64-linux-gnu
+sudo apt install python3-dev python3-pip python3-pytest libtirpc-dev r-base-dev
 
 # We clone the source code recursively to obtain the code and submodules
 

@@ -23,7 +23,7 @@ jobs:
       run: ./examples/bernoulli data --file=./examples/bernoulli.data.json
     - name: test dependencies
       run: |
-        sudo apt-get install r-base-dev python3-pip python3-pytest gcc
+        sudo apt-get install python3-dev python3-pip python3-pytest libtirpc-dev r-base-dev
         pip3 install -r contrib/requirements.txt
     - name: test
       run: pytest-3 .
