@@ -38,7 +38,7 @@ xdg-open disaster.pdf
 # Now we reproduce comparisons of bridge sampling and polystan that appear in
 # Section 6 Examples from a Python script. First, we need to install R
 
-sudo apt install r-base-dev
+sudo apt install r-base-dev python3-dev build-essential
 
 # Now we run our examples. This command may take some time
 
