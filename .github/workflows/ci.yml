@@ -25,5 +25,6 @@ jobs:
       run: |
         sudo apt-get install python3-dev python3-pip python3-pytest libtirpc-dev r-base-dev
         pip3 install -r contrib/requirements.txt
+        sudo chmod 775 /usr/local/lib/R/site-library
     - name: test
       run: pytest-3 .
