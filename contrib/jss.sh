@@ -1,5 +1,6 @@
 # This is a guide to reproducing examples from the paper on a
-# Ubuntu/debian system
+# Ubuntu/debian system. These commands are tested by a CI job here
+# https://github.com/xhep-lab/polystan/actions
 
 # First, we install necessary dependencies for polystan
 
@@ -48,6 +49,6 @@ python3 contrib/test_compare.py
 more compare.json
 
 # Lastly, we can run the unit tests. Amongst other things, this checks
-# all results in the paper
+# all results in the paper. This may take some time
 
 python3 -m pytest .

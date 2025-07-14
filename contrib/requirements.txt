@@ -3,5 +3,5 @@ matplotlib
 numpy
 pytest
 pytest-mpl
-syrupy
 rpy2
+syrupy
