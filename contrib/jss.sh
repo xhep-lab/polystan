@@ -6,6 +6,10 @@
 
 sudo apt-get install git make gcc gfortran libopenmpi-dev
 
+# We also install some dependencies for our R comparisons
+
+sudo apt install r-base-dev gcc-x86-64-linux-gnu
+
 # We clone the source code recursively to obtain the code and submodules
 
 git clone --recursive https://github.com/xhep-lab/polystan
@@ -36,17 +40,12 @@ python3 contrib/test_disaster.py
 xdg-open disaster.pdf
 
 # Now we reproduce comparisons of bridge sampling and polystan that appear in
-# Section 6 Examples from a Python script. First, we need to install R
-
-sudo apt install r-base-dev gcc
-
-# Now we run our examples. This command may take some time
+# Section 6 Examples from a Python script. This command may take some time
 
 python3 contrib/test_compare.py
 
-# This creates a data file "compare.json". Take a look
-
-more compare.json
+# You should see results from polystan and bridge sampling printed to the
+# screen
 
 # Lastly, we can run the unit tests. Amongst other things, this checks
 # all results in the paper. This may take some time
