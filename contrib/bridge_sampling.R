@@ -1,5 +1,8 @@
 # run bridge sampling with Stan MCMC chains on Stan models
 
+dir.create(Sys.getenv("R_LIBS_USER"), recursive = TRUE)
+.libPaths(Sys.getenv("R_LIBS_USER"))
+
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load("bridgesampling", "rstan", "jsonlite")
 
