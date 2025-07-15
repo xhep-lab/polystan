@@ -16,7 +16,7 @@ from examples import example
 PLOT_SETTINGS = {"no-feedback": True, "nlive": 1000, "write-samples": True}
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(savefig_kwargs={"format": "pdf"})
 def test_disaster_fig():
 
     # styling
@@ -53,8 +53,3 @@ def test_disaster_fig():
     ax.set_ylabel("frequency in 4000 draws", color="black")
 
     return fig
-
-
-if __name__ == "__main__":
-    fig = test_disaster_fig()
-    fig.savefig("disaster.pdf")

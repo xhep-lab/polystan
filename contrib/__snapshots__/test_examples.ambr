@@ -1,37 +1,37 @@
 # serializer version: 1
 # name: test_evidence[bernoulli.stan]
-  -6.199459075927734
+  -6.19946
 # ---
 # name: test_evidence[disaster.stan]
-  -176.7947540283203
+  -176.795
 # ---
 # name: test_evidence[eggbox.stan]
-  -15.066864967346191
+  -15.0669
 # ---
 # name: test_evidence[gaussian.stan]
-  -0.00551773514598608
+  -0.00551774
 # ---
 # name: test_evidence[glmm_h0.stan]
-  -156.30838012695312
+  -156.308
 # ---
 # name: test_evidence[glmm_h1.stan]
-  -156.48731994628906
+  -156.487
 # ---
 # name: test_evidence[himmelblau.stan]
-  -4.4977874755859375
+  -4.49779
 # ---
 # name: test_evidence[priors.stan]
-  -0.0009999993490055203
+  -0.000999999
 # ---
 # name: test_evidence[rastrigin.stan]
-  -22.82518768310547
+  -22.8252
 # ---
 # name: test_evidence[rosenbrock.stan]
-  -9.264966011047363
+  -9.26497
 # ---
 # name: test_evidence[shell.stan]
-  -5.59080171585083
+  -5.5908
 # ---
 # name: test_evidence[slab_spike.stan]
-  -4.565235137939453
+  -4.56524
 # ---

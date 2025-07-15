@@ -1,4 +1,88 @@
 # serializer version: 1
+# name: test_bridge_sampling[bernoulli.stan]
+  dict({
+    'error log evidence': 0.000361986,
+    'log evidence': -6.20489,
+    'neval': 243238,
+  })
+# ---
+# name: test_bridge_sampling[disaster.stan]
+  dict({
+    'error log evidence': 0.00193918,
+    'log evidence': -62.0608,
+    'neval': 81476800,
+  })
+# ---
+# name: test_bridge_sampling[eggbox.stan]
+  dict({
+    'error log evidence': 0.125202,
+    'log evidence': -28.3233,
+    'neval': 796773,
+  })
+# ---
+# name: test_bridge_sampling[gaussian.stan]
+  dict({
+    'error log evidence': 0.000555094,
+    'log evidence': 0.000191301,
+    'neval': 563334,
+  })
+# ---
+# name: test_bridge_sampling[glmm_h0.stan]
+  dict({
+    'error log evidence': 0.000499566,
+    'log evidence': -156.479,
+    'neval': 1104770,
+  })
+# ---
+# name: test_bridge_sampling[glmm_h1.stan]
+  dict({
+    'error log evidence': 0.00474544,
+    'log evidence': -156.713,
+    'neval': 3374200,
+  })
+# ---
+# name: test_bridge_sampling[himmelblau.stan]
+  dict({
+    'error log evidence': 0.0334683,
+    'log evidence': -4.86578,
+    'neval': 332999,
+  })
+# ---
+# name: test_bridge_sampling[priors.stan]
+  dict({
+    'error log evidence': 0.000668779,
+    'log evidence': -0.000498468,
+    'neval': 405564,
+  })
+# ---
+# name: test_bridge_sampling[rastrigin.stan]
+  dict({
+    'error log evidence': 0.0464627,
+    'log evidence': -104.182,
+    'neval': 568046,
+  })
+# ---
+# name: test_bridge_sampling[rosenbrock.stan]
+  dict({
+    'error log evidence': 0.0244839,
+    'log evidence': -9.37889,
+    'neval': 2240930,
+  })
+# ---
+# name: test_bridge_sampling[shell.stan]
+  dict({
+    'error log evidence': 0.012201,
+    'log evidence': -5.70835,
+    'neval': 3949480,
+  })
+# ---
+# name: test_bridge_sampling[slab_spike.stan]
+  dict({
+    'error log evidence': 0.00071648,
+    'log evidence': -5.34118,
+    'neval': 259280,
+  })
+# ---
 # name: test_compare[bernoulli.stan]
   dict({
     'bridge_sampling': dict({
@@ -165,5 +249,89 @@
       'log evidence': -4.599237442016602,
       'neval': 341354,
     }),
+  })
+# ---
+# name: test_polystan[bernoulli.stan]
+  dict({
+    'error log evidence': 0.0286468,
+    'log evidence': -6.20444,
+    'neval': 171591,
+  })
+# ---
+# name: test_polystan[disaster.stan]
+  dict({
+    'error log evidence': 0.0852375,
+    'log evidence': -176.819,
+    'neval': 1019610,
+  })
+# ---
+# name: test_polystan[eggbox.stan]
+  dict({
+    'error log evidence': 0.102543,
+    'log evidence': -15.058,
+    'neval': 3616590,
+  })
+# ---
+# name: test_polystan[gaussian.stan]
+  dict({
+    'error log evidence': 0.0936361,
+    'log evidence': 0.150337,
+    'neval': 4504080,
+  })
+# ---
+# name: test_polystan[glmm_h0.stan]
+  dict({
+    'error log evidence': 0.0807884,
+    'log evidence': -156.22,
+    'neval': 604896,
+  })
+# ---
+# name: test_polystan[glmm_h1.stan]
+  dict({
+    'error log evidence': 0.114306,
+    'log evidence': -156.363,
+    'neval': 10294500,
+  })
+# ---
+# name: test_polystan[himmelblau.stan]
+  dict({
+    'error log evidence': 0.0681178,
+    'log evidence': -4.63552,
+    'neval': 912030,
+  })
+# ---
+# name: test_polystan[priors.stan]
+  dict({
+    'error log evidence': 0.000999001,
+    'log evidence': -0.000999999,
+    'neval': 20579,
+  })
+# ---
+# name: test_polystan[rastrigin.stan]
+  dict({
+    'error log evidence': 0.163145,
+    'log evidence': -24.1484,
+    'neval': 12564600,
+  })
+# ---
+# name: test_polystan[rosenbrock.stan]
+  dict({
+    'error log evidence': 0.11285,
+    'log evidence': -9.25703,
+    'neval': 2077030,
+  })
+# ---
+# name: test_polystan[shell.stan]
+  dict({
+    'error log evidence': 0.0943279,
+    'log evidence': -5.64011,
+    'neval': 1847210,
+  })
+# ---
+# name: test_polystan[slab_spike.stan]
+  dict({
+    'error log evidence': 0.0503967,
+    'log evidence': -4.59924,
+    'neval': 341354,
   })
 # ---
