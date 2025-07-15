@@ -13,7 +13,8 @@ ROOT = os.path.normpath(os.path.join(CWD, ".."))
 
 
 def make_polystan(target):
-    subprocess.check_call(f"make {target}", shell=True, cwd=ROOT)
+    relpath = os.path.relpath(target, ROOT)
+    subprocess.check_call(f"make {relpath}", shell=True, cwd=ROOT)
 
 
 def cli_subargs(**kwargs):
