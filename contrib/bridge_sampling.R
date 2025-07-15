@@ -7,6 +7,7 @@ if (!require("pacman")) install.packages("pacman")
 pacman::p_load("bridgesampling", "rstan", "jsonlite")
 
 rstan_options(auto_write = TRUE)
+options(warn = -1)
 
 bridge_sampling = function(target, iter, warmup, chains, seed, headers) {
   set.seed(seed)

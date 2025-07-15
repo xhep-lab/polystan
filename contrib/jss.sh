@@ -11,6 +11,10 @@ sudo apt-get install git make gcc gfortran libopenmpi-dev
 
 sudo apt install python3 python3-pip python3-venv python3-pytest
 
+# To compare pdf figures to those expected, we require
+
+sudo apt install ghostscript
+
 # We also install some dependencies for our comparisons to bridge sampling
 # which is in R
 
