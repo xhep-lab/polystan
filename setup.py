@@ -1,5 +1,6 @@
 import os
 import sysconfig
+import warnings
 
 from setuptools import setup
 
@@ -18,9 +19,11 @@ REQS = [
     'syrupy'
 ]
 
-with open(PTH_FILE, 'w') as f:
-    print(PKG_DIR, file=f)
-
+try:
+    with open(PTH_FILE, 'w') as f:
+        print(PKG_DIR, file=f)
+except PermissionError as e:
+    warnings.warn(e)
 
 setup(
     name='polystan',
