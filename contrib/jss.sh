@@ -41,7 +41,7 @@ source .venv/bin/activate
 
 # and install the Python dependencies there
 
-pip install -r contrib/requirements.txt
+pip install .
 
 # Now we verify figure 2 from a Python script
 

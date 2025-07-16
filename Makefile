@@ -127,6 +127,10 @@ format: format-cxx-files format-python-files format-stan-files
 polystan-update:
 	git submodule update --init --recursive
 
+.PHONY: python
+python:
+	pip install .
+
 .PHONY: test-polystan
-test-polystan:
-	pytest ./test/
+test-polystan: python
+	pytest .

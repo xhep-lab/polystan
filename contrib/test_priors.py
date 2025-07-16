@@ -9,7 +9,7 @@ import numpy as np
 from scipy.stats import beta, betaprime, cauchy, expon, mielke, norm
 import pytest
 
-from run_polystan import run_polystan
+from polystan import run_polystan
 from examples import example
 
 

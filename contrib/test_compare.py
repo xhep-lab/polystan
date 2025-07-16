@@ -8,8 +8,8 @@ import sigfig
 import pytest
 
 from examples import examples
-from run_polystan import run_polystan
-from run_bridge_sampling import run_bridge_sampling
+from polystan import run_polystan
+from bridge_sampling import run_bridge_sampling
 
 
 POLYCHORD_SETTINGS = {"no-feedback": True,

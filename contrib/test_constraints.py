@@ -9,7 +9,7 @@ import os
 import subprocess
 
 import pytest
-from run_polystan import run_polystan
+from polystan import run_polystan
 from examples import search_programs
 
 CWD = os.path.dirname(os.path.realpath(__file__))

@@ -7,7 +7,7 @@ import os
 import sigfig
 import pytest
 
-from run_polystan import run_polystan
+from polystan import run_polystan
 from examples import examples
 
 

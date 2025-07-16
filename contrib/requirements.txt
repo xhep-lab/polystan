@@ -1,8 +1,0 @@
-arviz
-matplotlib
-numpy
-pytest
-pytest-mpl
-rpy2
-sigfig
-syrupy

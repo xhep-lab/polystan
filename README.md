@@ -24,6 +24,7 @@ git submodule update --init --recursive  # update an existing clone
 ```
 Lastly, you can build and run a model, e.g.,
 ```bash
+cd polystan
 make examples/bernoulli  # builds everything required for this model
 ./examples/bernoulli data --file examples/bernoulli.data.json  # runs model
 ```
@@ -37,6 +38,19 @@ For further runtime options, see
 ```bash
 ./examples/bernoulli --help  # options
 ./examples/bernoulli polychord --help  # polychord options
+```
+
+## Python interface
+
+You can install a thin Python wrapper
+```bash
+pip install .
+```
+To build and run programs inside Python,
+```python
+from polystan import run_polystan
+
+data = run_polystan("examples/bernoulli.stan")
 ```
 
 ## Outputs

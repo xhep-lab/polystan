@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 
-from run_polystan import run_polystan
+from polystan import run_polystan
 from examples import example
 
 
